@@ -1,5 +1,4 @@
 # Studify – Aplikasi Habit Tracker Belajar Berbasis Web
----
 Studify adalah aplikasi habit tracker berbasis web yang dirancang untuk membantu mahasiswa dan pengguna umum dalam mengelola waktu, membangun konsistensi, serta meningkatkan produktivitas belajar. Aplikasi ini menggabungkan metode Pomodoro untuk fokus belajar, pencatatan kebiasaan harian (habit tracker), penjadwalan aktivitas, sistem pengingat otomatis melalui email, serta statistik dasar progres pengguna. Dibangun menggunakan stack teknologi modern seperti Next.js untuk frontend dan backend, Firebase sebagai database, serta dikemas dalam container Docker untuk memudahkan deployment dan pengembangan tim.
 
 Fitur utama Studify meliputi:
@@ -12,13 +11,9 @@ Fitur utama Studify meliputi:
 
 Aplikasi ini dikembangkan sebagai proyek untuk mata kuliah Pemrograman Terapan yang mengintegrasikan konsep pengembangan web, manajemen waktu, dan desain antarmuka yang user-friendly.
 
----
-
 # 🛠️ Panduan Instalasi
 ### Jalankan Container
 `docker compose up --watch`
-
----
 
 # Anggota Kelompok
 2372015 - Ariel Jonathan Wihardja  
