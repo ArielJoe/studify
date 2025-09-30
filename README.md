@@ -15,11 +15,8 @@ Aplikasi ini dikembangkan sebagai proyek untuk mata kuliah Pemrograman Terapan y
 ---
 
 # 🛠️ Panduan Instalasi
-### Build image
-`docker build -t studify .`
-
-### Jalankan container
-`docker run -p 3000:3000 --env-file .env studify`
+### Jalankan Container
+`docker compose up --watch`
 
 ---
 
