@@ -1,0 +1,10 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  studify:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env          # ← baca dari file .env
+    restart: unless-stopped

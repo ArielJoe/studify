@@ -12,8 +12,18 @@ Fitur utama Studify meliputi:
 
 Aplikasi ini dikembangkan sebagai proyek untuk mata kuliah Pemrograman Terapan yang mengintegrasikan konsep pengembangan web, manajemen waktu, dan desain antarmuka yang user-friendly.
 
-Anggota Kelompok
 ---
+
+# 🛠️ Panduan Instalasi
+### Build image
+`docker build -t studify .`
+
+### Jalankan container
+`docker run -p 3000:3000 --env-file .env studify`
+
+---
+
+# Anggota Kelompok
 2372015 - Ariel Jonathan Wihardja  
 2372023 - Eben Praus Yosia  
 2372049 - Derryl Eberhard Sangaptaras Sembiring
