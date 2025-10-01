@@ -1,12 +1,7 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import {
-  Timer,
-  Calendar,
-  TrendingUp,
-  Target,
-  CheckCircle2,
-  Clock,
-} from "lucide-react";
+import { Timer, Calendar, TrendingUp, Target } from "lucide-react";
 
 const Page = () => {
   const features = [
@@ -49,7 +44,6 @@ const Page = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.15),transparent_50%)]" />
 
         <div className="max-w-5xl mx-auto text-center relative z-10 animate-fade-in">
-
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
             Build better habits,
             <br />
