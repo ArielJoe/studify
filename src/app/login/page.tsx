@@ -1,7 +1,5 @@
 import LoginForm from "@/components/ui/login-form";
 
-
-
 const Page = () => {
   return (
     <div className="min-h-screen flex">
