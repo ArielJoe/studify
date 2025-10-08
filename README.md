@@ -13,6 +13,8 @@ Aplikasi ini dikembangkan sebagai proyek untuk mata kuliah Pemrograman Terapan y
 
 # 🛠️ Panduan Instalasi
 ### Jalankan Container
+`npm install`
+
 `docker compose up --watch`
 
 # Anggota Kelompok
