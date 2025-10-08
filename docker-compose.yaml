@@ -2,7 +2,8 @@ services:
   app:
     build:
       context: .
-    image: nextjs-dev
+    image: studify-app
+    container_name: studify-app
     ports:
       - "3000:3000"
     environment:
