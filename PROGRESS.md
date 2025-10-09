@@ -1,4 +1,6 @@
 # Progress Laporan Proyek Studify  
+---
+
 **Periode: 29 September 2025 - 03 Oktober 2025**
 
 #### Ariel Jonathan Wihardja (2372015)
@@ -21,3 +23,23 @@
 - ✅ **Fitur Login**:  
   - Install library component Kibo UI  
   - Implementasi UI Login 
+
+---
+
+**Periode: 06 Oktober 2025 - 10 Oktober 2025**
+
+#### Ariel Jonathan Wihardja (2372015)
+- ✅ **Firebase Login**:  
+  - Data login dengan akun Google tersimpan ke Firebase Firestore  
+
+#### Eben Praus Yosia (2372023)
+- ✅ **Fitur Pomodoro 1**:  
+  - Menambahkan komponen-komponen UI yang diperlukan untuk pomodoro timer
+  - Membuat timer dan progres bar timer  
+  - Menambahkan tombol play, pause, dan reset  
+
+#### Derryl Eberhard Sangaptaras Sembiring (2372049)
+- ✅ **Fitur Pomodoro 2**:  
+  - Membuat kategori pilihan timer (belajar, istirahat, dan istirahat panjang)  
+  - Membuat pengaturan waktu untuk tiap kategori timer  
+  - Membuat notifikasi browser ketika timer sudah selesai
