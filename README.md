@@ -36,7 +36,7 @@ Lalu jalankan :
 docker compose up --watch
 ```
 
-# Anggota Kelompok
+# 👥 Anggota Kelompok
 2372015 - Ariel Jonathan Wihardja  
 2372023 - Eben Praus Yosia  
 2372049 - Derryl Eberhard Sangaptaras Sembiring
