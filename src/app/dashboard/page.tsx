@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   Timer,
   Calendar,
@@ -15,24 +16,21 @@ const Page = () => {
       title: "Pomodoro Timer",
       description:
         "Stay focused with customizable work and break intervals to maximize productivity",
+      href: "/pomodoro",
     },
     {
       icon: Calendar,
       title: "Habit Scheduling",
       description:
         "Plan your daily routines and build consistent habits that stick",
+      href: "/schedule",
     },
     {
       icon: TrendingUp,
       title: "Progress Tracking",
       description:
         "Visualize your growth with detailed statistics and achievement streaks",
-    },
-    {
-      icon: Target,
-      title: "Reminder Setting",
-      description:
-        "Stay on track by setting smart reminders that help you stay consistent and never miss your daily habits.",
+      href: "/tracking",
     },
   ];
 
@@ -85,30 +83,39 @@ const Page = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="p-8 rounded-xl hover:shadow-lg transition-all duration-300 border-2 hover:border-sky-400 bg-gray-50 animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+          <div className="grid md:grid-cols-3 gap-4">
+            {features.map((feature, index) => {
+              const FeatureContent = (
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-md"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #5eead4 0%, #3b82f6 100%)", // toska → biru
-                  }}
+                  className="p-8 rounded-xl hover:shadow-lg transition-all duration-300 border-2 hover:border-sky-400 bg-gray-50 animate-slide-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <feature.icon className="w-7 h-7 text-white" />
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-md"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #5eead4 0%, #3b82f6 100%)",
+                    }}
+                  >
+                    <feature.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 text-gray-900">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
+              );
+
+              return feature.href ? (
+                <Link href={feature.href} key={index} className="block">
+                  {FeatureContent}
+                </Link>
+              ) : (
+                <div key={index}>{FeatureContent}</div>
+              );
+            })}
           </div>
         </div>
       </section>
