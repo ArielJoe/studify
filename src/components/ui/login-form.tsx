@@ -45,24 +45,22 @@ const LoginForm = () => {
             </div>
 
             <div className="text-center text-sm text-muted-foreground">
-  <p>
-  By signing in, you agree to our{" "}
-  <a
-    href="#"
-    className="font-medium hover:underline text-sky-400"
-  >
-    Terms of Service
-  </a>{" "}
-  and{" "}
-  <a
-    href="#"
-    className="font-medium hover:underline text-sky-400"
-  >
-    Privacy Policy
-  </a>
-</p>
-
-
+              <p>
+                By signing in, you agree to our{" "}
+                <a
+                  href="#"
+                  className="font-medium hover:underline text-sky-400"
+                >
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a
+                  href="#"
+                  className="font-medium hover:underline text-sky-400"
+                >
+                  Privacy Policy
+                </a>
+              </p>
             </div>
           </div>
         </CardContent>
