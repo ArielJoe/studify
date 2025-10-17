@@ -43,3 +43,21 @@
   - Membuat kategori pilihan timer (belajar, istirahat, dan istirahat panjang)  
   - Membuat pengaturan waktu untuk tiap kategori timer  
   - Membuat notifikasi browser ketika timer sudah selesai
+
+---
+
+**Periode: 11 Oktober 2025 - 17 Oktober 2025**
+
+#### Ariel Jonathan Wihardja (2372015)
+- ✅ **Firestore**:  
+  - Integrasi fitur Schedule dan Task dengan database Firestore
+
+#### Eben Praus Yosia (2372023)
+- ✅ **Fitur Schedule**:  
+  - Memperbaiki layout dashboard dan menambahkan route
+  - Membuat fitur untuk create dan delete schedule
+
+#### Derryl Eberhard Sangaptaras Sembiring (2372049)
+- ✅ **Fitur Task**:  
+  - Membuat fitur create dan delete tasks
+  - Membuat timer untuk belajar dan istirahat pada task
