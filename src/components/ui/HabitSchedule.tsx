@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowLeft, Timer } from "lucide-react";
 import SubjectCard from "@/components/ui/SubjectCard";
@@ -8,26 +11,10 @@ import TaskList from "@/components/ui/TaskList";
 import PomodoroProgressBar from "@/components/ui/PomodoroProgressBar";
 import CreateSubjectDialog from "@/components/ui/CreateSubjectDialog";
 import CreateTaskDialog from "@/components/ui/CreateTaskDialog";
+import { useSubjects } from "@/hooks/useSubject";
+import { useTasks } from "@/hooks/useTasks";
 import { toast } from "@/hooks/use-toast";
-
-export interface Subject {
-  id: string;
-  title: string;
-  description: string;
-  scheduledDate?: Date;
-  createdAt: Date;
-}
-
-export interface Task {
-  id: string;
-  subjectId: string;
-  title: string;
-  pomodoroMinutes: number;
-  breakMinutes: number;
-  completed: boolean;
-  completedAt?: Date;
-  createdAt: Date;
-}
+import type { Subject, Task } from "@/types/schedule";
 
 export interface TimerState {
   isActive: boolean;
@@ -39,9 +26,20 @@ export interface TimerState {
 }
 
 const Page = () => {
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const router = useRouter();
+  const {
+    subjects,
+    loading: subjectsLoading,
+    createSubject,
+    deleteSubject,
+  } = useSubjects();
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+  const {
+    tasks,
+    loading: tasksLoading,
+    createTask,
+    toggleTask,
+  } = useTasks(selectedSubject?.id || null);
   const [showSubjectDialog, setShowSubjectDialog] = useState(false);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
   const [timerState, setTimerState] = useState<TimerState>({
@@ -52,61 +50,86 @@ const Page = () => {
     totalTime: 0,
   });
 
-  const createSubject = (
+  // Redirect ke login jika belum login
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleCreateSubject = async (
     title: string,
     description: string,
     scheduledDate?: Date
   ) => {
-    const newSubject: Subject = {
-      id: Date.now().toString(),
-      title,
-      description,
-      scheduledDate,
-      createdAt: new Date(),
-    };
-    setSubjects([...subjects, newSubject]);
-    toast({
-      title: "Subject created",
-      description: scheduledDate
-        ? `${title} scheduled for ${scheduledDate.toLocaleDateString()}`
-        : `${title} has been added to your study tracker.`,
-    });
-  };
-
-  const deleteSubject = (id: string) => {
-    setSubjects(subjects.filter((s) => s.id !== id));
-    setTasks(tasks.filter((t) => t.subjectId !== id));
-    if (selectedSubject?.id === id) {
-      setSelectedSubject(null);
+    try {
+      await createSubject(title, description, scheduledDate || null);
+      toast({
+        title: "Subject created",
+        description: scheduledDate
+          ? `${title} scheduled for ${scheduledDate.toLocaleDateString()}`
+          : `${title} has been added to your schedule.`,
+      });
+      setShowSubjectDialog(false);
+    } catch (error) {
+      console.error("Error creating subject:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create subject. Please try again.",
+        variant: "destructive",
+      });
     }
-    toast({
-      title: "Subject deleted",
-      description: "The subject and its tasks have been removed.",
-    });
   };
 
-  const createTask = (
+  const handleDeleteSubject = async (id: string) => {
+    try {
+      await deleteSubject(id);
+      toast({
+        title: "Subject deleted",
+        description: "The subject and its tasks have been removed.",
+      });
+    } catch (error) {
+      console.error("Error deleting subject:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete subject. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCreateTask = async (
     title: string,
     pomodoroMinutes: number,
     breakMinutes: number
   ) => {
-    if (!selectedSubject) return;
-
-    const newTask: Task = {
-      id: Date.now().toString(),
-      subjectId: selectedSubject.id,
-      title,
-      pomodoroMinutes,
-      breakMinutes,
-      completed: false,
-      createdAt: new Date(),
-    };
-
-    setTasks([...tasks, newTask]);
-    toast({
-      title: "Task created",
-      description: `${title} with ${pomodoroMinutes}min Pomodoro and ${breakMinutes}min break has been added.`,
-    });
+    if (!auth.currentUser) {
+      toast({ title: "Error", description: "User not logged in" });
+      return;
+    }
+    try {
+      await createTask(
+        selectedSubject!.id,
+        title,
+        pomodoroMinutes,
+        breakMinutes
+      );
+      toast({
+        title: "Task created",
+        description: `${title} with ${pomodoroMinutes}min Pomodoro and ${breakMinutes}min break has been added.`,
+      });
+      setShowTaskDialog(false);
+    } catch (error) {
+      console.error("Error creating task:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create task. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const startTask = (task: Task) => {
@@ -126,18 +149,19 @@ const Page = () => {
     });
   };
 
-  const toggleTask = (taskId: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              completed: !task.completed,
-              completedAt: !task.completed ? new Date() : undefined,
-            }
-          : task
-      )
-    );
+  const handleToggleTask = async (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+    try {
+      await toggleTask(taskId, task.completed);
+    } catch (error) {
+      console.error("Error toggling task:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update task. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleTimerComplete = () => {
@@ -149,7 +173,6 @@ const Page = () => {
         timeRemaining: 0,
         totalTime: 0,
       });
-
       toast({
         title: "Break complete!",
         description: "Ready to start your next task?",
@@ -159,8 +182,6 @@ const Page = () => {
         const completedTask = tasks.find(
           (t) => t.id === timerState.currentTaskId
         );
-        toggleTask(timerState.currentTaskId);
-
         if (completedTask && completedTask.breakMinutes > 0) {
           const breakSeconds = completedTask.breakMinutes * 60;
           setTimerState({
@@ -170,7 +191,6 @@ const Page = () => {
             timeRemaining: breakSeconds,
             totalTime: breakSeconds,
           });
-
           toast({
             title: "Pomodoro complete! 🎉",
             description: `Take a ${completedTask.breakMinutes}-minute break.`,
@@ -183,7 +203,6 @@ const Page = () => {
             timeRemaining: 0,
             totalTime: 0,
           });
-
           toast({
             title: "Task complete! 🎉",
             description: "Great work! Ready for your next task?",
@@ -205,12 +224,19 @@ const Page = () => {
       timeRemaining: 0,
       totalTime: 0,
     });
-
     toast({
       title: "Timer reset",
       description: "You can start a new Pomodoro session anytime.",
     });
   };
+
+  if (subjectsLoading || tasksLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   const subjectTasks = tasks.filter((t) => t.subjectId === selectedSubject?.id);
 
@@ -222,11 +248,11 @@ const Page = () => {
           <div className="flex items-center justify-center gap-2 mb-2">
             <Timer className="h-8 w-8 text-primary" />
             <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-sky-500">
-              Study Tracker
+              Habit Scheduling
             </h1>
           </div>
           <p className="text-muted-foreground text-lg">
-            Organize your studies with Study Tracker
+            Organize your studies with Habit Scheduling
           </p>
         </header>
 
@@ -245,7 +271,6 @@ const Page = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Your Subjects</h2>
-              {/* changed to sky-400 */}
               <Button
                 onClick={() => setShowSubjectDialog(true)}
                 className="bg-sky-400 hover:bg-sky-500 text-white transition-colors"
@@ -266,7 +291,6 @@ const Page = () => {
                     Create your first subject to start tracking your study
                     sessions
                   </p>
-                  {/* changed to sky-400 */}
                   <Button
                     onClick={() => setShowSubjectDialog(true)}
                     size="lg"
@@ -279,12 +303,12 @@ const Page = () => {
               </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
-                {subjects.map((subject) => (
+                {subjects.map((subject: Subject) => (
                   <SubjectCard
                     key={subject.id}
                     subject={subject}
                     onSelect={setSelectedSubject}
-                    onDelete={deleteSubject}
+                    onDelete={handleDeleteSubject}
                   />
                 ))}
               </div>
@@ -293,7 +317,6 @@ const Page = () => {
         ) : (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              {/* ghost -> tinted sky */}
               <Button
                 variant="ghost"
                 onClick={() => setSelectedSubject(null)}
@@ -302,7 +325,6 @@ const Page = () => {
                 <ArrowLeft className="h-4 w-4 text-sky-600" />
                 Back to Subjects
               </Button>
-              {/* changed to sky-400 */}
               <Button
                 onClick={() => setShowTaskDialog(true)}
                 className="bg-sky-400 hover:bg-sky-500 text-white transition-colors"
@@ -324,7 +346,7 @@ const Page = () => {
             <TaskList
               tasks={subjectTasks}
               onStartTask={startTask}
-              onToggleTask={toggleTask}
+              onToggleTask={handleToggleTask}
             />
           </div>
         )}
@@ -333,12 +355,12 @@ const Page = () => {
         <CreateSubjectDialog
           open={showSubjectDialog}
           onOpenChange={setShowSubjectDialog}
-          onSubmit={createSubject}
+          onSubmit={handleCreateSubject}
         />
         <CreateTaskDialog
           open={showTaskDialog}
           onOpenChange={setShowTaskDialog}
-          onSubmit={createTask}
+          onSubmit={handleCreateTask}
         />
       </div>
     </div>

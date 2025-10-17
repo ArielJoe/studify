@@ -1,19 +1,9 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Play, Clock, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-export interface Task {
-  id: string;
-  subjectId: string;
-  title: string;
-  pomodoroMinutes: number;
-  breakMinutes: number;
-  completed: boolean;
-  completedAt?: Date;
-  createdAt: Date;
-}
+import { Task } from "@/types/schedule";
 
 interface TaskListProps {
   tasks: Task[];

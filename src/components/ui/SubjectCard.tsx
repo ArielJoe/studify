@@ -3,14 +3,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, Trash2, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-
-export interface Subject {
-  id: string;
-  title: string;
-  description: string;
-  scheduledDate?: Date;
-  createdAt: Date;
-}
+import { Subject } from "@/types/schedule";
 
 interface SubjectCardProps {
   subject: Subject;
