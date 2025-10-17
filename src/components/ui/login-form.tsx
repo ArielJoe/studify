@@ -45,6 +45,10 @@ const LoginForm = () => {
           photoURL: user.photoURL,
           createdAt: new Date(),
           lastActive: new Date(),
+          pomodoroConfig: {
+            focusDuration: 25, // menit
+            breakDuration: 5, // menit
+          },
         },
         { merge: true }
       );
