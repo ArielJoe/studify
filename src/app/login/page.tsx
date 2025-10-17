@@ -4,16 +4,20 @@ const Page = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Hero Section */}
-      <div className="hidden lg:flex lg:flex-1 relative overflow-hidden" style={{
+      <div
+        className="hidden lg:flex lg:flex-1 relative overflow-hidden"
+        style={{
           background: "linear-gradient(135deg, #2dd4bf 0%, #3b82f6 100%)", // hijau → biru
-        }}>
+        }}
+      >
         <div className="relative z-10 flex flex-col justify-center px-12 text-white">
           <div className="max-w-md space-y-6">
             <h2 className="text-5xl font-bold leading-tight drop-shadow-md">
               Build better habits, one day at a time
             </h2>
             <p className="text-xl text-white/90 leading-relaxed">
-              Track your progress, stay motivated, and transform your daily routines into lasting positive changes.
+              Track your progress, stay motivated, and transform your daily
+              routines into lasting positive changes.
             </p>
           </div>
         </div>
@@ -30,7 +34,7 @@ const Page = () => {
               Your personal habit tracking companion
             </p>
           </div>
-          
+
           <LoginForm />
         </div>
       </div>
