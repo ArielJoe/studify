@@ -34,7 +34,7 @@ export const useSubjects = () => {
         q,
         (snapshot) => {
           const data = snapshot.docs.map((doc) => {
-            const d = doc.data();
+            const d = doc.data() as any;
             return {
               id: doc.id,
               userId: d.userId,
@@ -76,9 +76,29 @@ export const useSubjects = () => {
     });
   };
 
+  const updateSubject = async (
+    id: string,
+    title: string,
+    description: string,
+    scheduledDate: Date | null
+  ) => {
+    setSubjects((prev) =>
+      prev.map((s) =>
+        s.id === id
+          ? {
+              ...s,
+              title: title.trim(),
+              description: description.trim(),
+              scheduledDate: scheduledDate ?? null,
+            }
+          : s
+      )
+    );
+  };
+
   const deleteSubject = async (id: string) => {
     await deleteDoc(doc(db, "subjects", id));
   };
 
-  return { subjects, loading, createSubject, deleteSubject };
+  return { subjects, loading, createSubject, updateSubject, deleteSubject };
 };

@@ -12,6 +12,7 @@ import PomodoroProgressBar from "@/components/ui/PomodoroProgressBar";
 import CreateSubjectDialog from "@/components/ui/CreateSubjectDialog";
 import CreateTaskDialog from "@/components/ui/CreateTaskDialog";
 import UpdateTaskDialog from "./UpdateTaskDialog";
+import UpdateSubjectDialog from "@/components/ui/UpdateSubjectDialog"; // <-- dialog update subject
 import { useSubjects } from "@/hooks/useSubject";
 import { useTasks } from "@/hooks/useTasks";
 import { toast } from "@/hooks/use-toast";
@@ -28,25 +29,38 @@ export interface TimerState {
 
 const Page = () => {
   const router = useRouter();
+
   const {
     subjects,
     loading: subjectsLoading,
     createSubject,
     deleteSubject,
+    updateSubject, // <-- wajib ada di hook (frontend-only OK)
   } = useSubjects();
+
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+
   const {
     tasks,
     loading: tasksLoading,
     createTask,
     updateTask,
     toggleTask,
-    deleteTask
+    deleteTask,
   } = useTasks(selectedSubject?.id || null);
+
   const [showSubjectDialog, setShowSubjectDialog] = useState(false);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
-  const [showUpdateTaskDialog, setUpdateTaskDialog] = useState(false)
-  const [taskSelected, setTaskSeleceted] = useState<Task|null> (null)
+  const [showUpdateTaskDialog, setUpdateTaskDialog] = useState(false);
+  const [taskSelected, setTaskSeleceted] = useState<Task | null>(null);
+
+  // ✅ hanya task yg baru selesai pomodoro boleh di-check
+  const [completableTaskId, setCompletableTaskId] = useState<string | null>(null);
+
+  // ✅ state dialog update subject
+  const [showUpdateSubjectDialog, setShowUpdateSubjectDialog] = useState(false);
+  const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+
   const [timerState, setTimerState] = useState<TimerState>({
     isActive: false,
     isPaused: false,
@@ -65,6 +79,7 @@ const Page = () => {
     return () => unsubscribe();
   }, [router]);
 
+  // ===== SUBJECT HANDLERS =====
   const handleCreateSubject = async (
     title: string,
     description: string,
@@ -96,6 +111,9 @@ const Page = () => {
         title: "Subject deleted",
         description: "The subject and its tasks have been removed.",
       });
+      if (selectedSubject?.id === id) {
+        setSelectedSubject(null);
+      }
     } catch (error) {
       console.error("Error deleting subject:", error);
       toast({
@@ -106,6 +124,56 @@ const Page = () => {
     }
   };
 
+  const openUpdateSubject = (subject: Subject) => {
+    setEditingSubject(subject);
+    setShowUpdateSubjectDialog(true);
+  };
+
+  const handleUpdateSubject = async (payload: {
+    id: string;
+    title: string;
+    description: string;
+    scheduledDate?: Date;
+  }) => {
+    try {
+      await updateSubject(
+        payload.id,
+        payload.title,
+        payload.description,
+        payload.scheduledDate ?? null
+      );
+
+      toast({
+        title: "Subject updated",
+        description: `${payload.title} has been updated successfully.`,
+      });
+
+      setShowUpdateSubjectDialog(false);
+
+      // sinkronkan panel detail kalau sedang melihat subject ini
+      if (selectedSubject?.id === payload.id) {
+        setSelectedSubject((prev) =>
+          prev
+            ? {
+                ...prev,
+                title: payload.title,
+                description: payload.description,
+                scheduledDate: payload.scheduledDate ?? null,
+              }
+            : prev
+        );
+      }
+    } catch (error) {
+      console.error("Error updating subject:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update subject. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // ===== TASK HANDLERS =====
   const handleCreateTask = async (
     title: string,
     pomodoroMinutes: number,
@@ -116,12 +184,7 @@ const Page = () => {
       return;
     }
     try {
-      await createTask(
-        selectedSubject!.id,
-        title,
-        pomodoroMinutes,
-        breakMinutes
-      );
+      await createTask(selectedSubject!.id, title, pomodoroMinutes, breakMinutes);
       toast({
         title: "Task created",
         description: `${title} with ${pomodoroMinutes}min Pomodoro and ${breakMinutes}min break has been added.`,
@@ -138,9 +201,9 @@ const Page = () => {
   };
 
   const handleUpdateTask = (taskUpdate: Task) => {
-      updateTask(taskUpdate)
-      setUpdateTaskDialog(false)
-  }
+    updateTask(taskUpdate);
+    setUpdateTaskDialog(false);
+  };
 
   const startTask = (task: Task) => {
     const totalSeconds = task.pomodoroMinutes * 60;
@@ -162,20 +225,18 @@ const Page = () => {
   const editTask = (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
     if (task) {
-    setTaskSeleceted(task)
-    setUpdateTaskDialog(true)
+      setTaskSeleceted(task);
+      setUpdateTaskDialog(true);
     }
+  };
 
-    
-  }
-
-
- 
   const handleToggleTask = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
     try {
       await toggleTask(taskId, task.completed);
+      // setelah dicentang, reset izin
+      setCompletableTaskId(null);
     } catch (error) {
       console.error("Error toggling task:", error);
       toast({
@@ -186,8 +247,10 @@ const Page = () => {
     }
   };
 
+  // ===== TIMER HANDLERS =====
   const handleTimerComplete = () => {
     if (timerState.isBreak) {
+      // break selesai
       setTimerState({
         isActive: false,
         isPaused: false,
@@ -200,10 +263,13 @@ const Page = () => {
         description: "Ready to start your next task?",
       });
     } else {
+      // work session selesai → izinkan task tsb dicentang
       if (timerState.currentTaskId) {
-        const completedTask = tasks.find(
-          (t) => t.id === timerState.currentTaskId
-        );
+        setCompletableTaskId(timerState.currentTaskId);
+      }
+
+      if (timerState.currentTaskId) {
+        const completedTask = tasks.find((t) => t.id === timerState.currentTaskId);
         if (completedTask && completedTask.breakMinutes > 0) {
           const breakSeconds = completedTask.breakMinutes * 60;
           setTimerState({
@@ -273,7 +339,7 @@ const Page = () => {
               Habit Scheduling
             </h1>
           </div>
-          <p className="text-muted-foreground text-lg">
+        <p className="text-muted-foreground text-lg">
             Organize your studies with Habit Scheduling
           </p>
         </header>
@@ -306,12 +372,9 @@ const Page = () => {
               <div className="text-center py-16">
                 <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-12 border border-border shadow-medium">
                   <Timer className="h-16 w-16 mx-auto mb-4 text-primary opacity-50" />
-                  <h3 className="text-xl font-semibold mb-2">
-                    No subjects yet
-                  </h3>
+                  <h3 className="text-xl font-semibold mb-2">No subjects yet</h3>
                   <p className="text-muted-foreground mb-6">
-                    Create your first subject to start tracking your study
-                    sessions
+                    Create your first subject to start tracking your study sessions
                   </p>
                   <Button
                     onClick={() => setShowSubjectDialog(true)}
@@ -331,6 +394,7 @@ const Page = () => {
                     subject={subject}
                     onSelect={setSelectedSubject}
                     onDelete={handleDeleteSubject}
+                    onEdit={openUpdateSubject}  // ✅ WAJIB ADA
                   />
                 ))}
               </div>
@@ -357,12 +421,8 @@ const Page = () => {
             </div>
 
             <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-6 border border-border shadow-medium">
-              <h2 className="text-3xl font-bold mb-2">
-                {selectedSubject.title}
-              </h2>
-              <p className="text-muted-foreground">
-                {selectedSubject.description}
-              </p>
+              <h2 className="text-3xl font-bold mb-2">{selectedSubject.title}</h2>
+              <p className="text-muted-foreground">{selectedSubject.description}</p>
             </div>
 
             <TaskList
@@ -371,6 +431,7 @@ const Page = () => {
               onToggleTask={handleToggleTask}
               onDeleteTask={deleteTask}
               onEditTask={editTask}
+              completableTaskId={completableTaskId}
             />
           </div>
         )}
@@ -381,19 +442,28 @@ const Page = () => {
           onOpenChange={setShowSubjectDialog}
           onSubmit={handleCreateSubject}
         />
+
         <CreateTaskDialog
           open={showTaskDialog}
           onOpenChange={setShowTaskDialog}
           onSubmit={handleCreateTask}
         />
+
         {taskSelected && (
-  <UpdateTaskDialog
-    task={taskSelected}
-    open={showUpdateTaskDialog}
-    onOpenChange={setUpdateTaskDialog}
-    onSubmit={handleUpdateTask}
-  />
-)}
+          <UpdateTaskDialog
+            task={taskSelected}
+            open={showUpdateTaskDialog}
+            onOpenChange={setUpdateTaskDialog}
+            onSubmit={handleUpdateTask}
+          />
+        )}
+
+        <UpdateSubjectDialog
+          open={showUpdateSubjectDialog}
+          onOpenChange={setShowUpdateSubjectDialog}
+          subject={editingSubject}
+          onSubmit={handleUpdateSubject}
+        />
       </div>
     </div>
   );
