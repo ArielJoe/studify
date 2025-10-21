@@ -11,6 +11,7 @@ import TaskList from "@/components/ui/TaskList";
 import PomodoroProgressBar from "@/components/ui/PomodoroProgressBar";
 import CreateSubjectDialog from "@/components/ui/CreateSubjectDialog";
 import CreateTaskDialog from "@/components/ui/CreateTaskDialog";
+import UpdateTaskDialog from "./UpdateTaskDialog";
 import { useSubjects } from "@/hooks/useSubject";
 import { useTasks } from "@/hooks/useTasks";
 import { toast } from "@/hooks/use-toast";
@@ -38,10 +39,14 @@ const Page = () => {
     tasks,
     loading: tasksLoading,
     createTask,
+    updateTask,
     toggleTask,
+    deleteTask
   } = useTasks(selectedSubject?.id || null);
   const [showSubjectDialog, setShowSubjectDialog] = useState(false);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
+  const [showUpdateTaskDialog, setUpdateTaskDialog] = useState(false)
+  const [taskSelected, setTaskSeleceted] = useState<Task|null> (null)
   const [timerState, setTimerState] = useState<TimerState>({
     isActive: false,
     isPaused: false,
@@ -132,6 +137,11 @@ const Page = () => {
     }
   };
 
+  const handleUpdateTask = (taskUpdate: Task) => {
+      updateTask(taskUpdate)
+      setUpdateTaskDialog(false)
+  }
+
   const startTask = (task: Task) => {
     const totalSeconds = task.pomodoroMinutes * 60;
     setTimerState({
@@ -149,6 +159,18 @@ const Page = () => {
     });
   };
 
+  const editTask = (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+    setTaskSeleceted(task)
+    setUpdateTaskDialog(true)
+    }
+
+    
+  }
+
+
+ 
   const handleToggleTask = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
@@ -347,6 +369,8 @@ const Page = () => {
               tasks={subjectTasks}
               onStartTask={startTask}
               onToggleTask={handleToggleTask}
+              onDeleteTask={deleteTask}
+              onEditTask={editTask}
             />
           </div>
         )}
@@ -362,6 +386,14 @@ const Page = () => {
           onOpenChange={setShowTaskDialog}
           onSubmit={handleCreateTask}
         />
+        {taskSelected && (
+  <UpdateTaskDialog
+    task={taskSelected}
+    open={showUpdateTaskDialog}
+    onOpenChange={setUpdateTaskDialog}
+    onSubmit={handleUpdateTask}
+  />
+)}
       </div>
     </div>
   );

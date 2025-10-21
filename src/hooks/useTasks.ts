@@ -71,6 +71,23 @@ export const useTasks = (subjectId: string | null) => {
     });
   };
 
+  // MASI update LOKAL STATE
+   const updateTask = async (
+    updates: Task
+  ) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === updates.id ? { ...task, ...updates } : task
+      )
+    );
+  };
+
+  // MASI delete LOKAL STATE
+  const deleteTask = async (taskId: string) => {
+    setTasks((prevTasks) =>
+      prevTasks.filter((task) => task.id !== taskId)
+    )
+  }
   const toggleTask = async (taskId: string, currentCompleted: boolean) => {
     const newCompleted = !currentCompleted;
     await updateDoc(doc(db, "tasks", taskId), {
@@ -79,5 +96,5 @@ export const useTasks = (subjectId: string | null) => {
     });
   };
 
-  return { tasks, loading, createTask, toggleTask };
+  return { tasks, loading, createTask, toggleTask, updateTask, deleteTask };
 };
