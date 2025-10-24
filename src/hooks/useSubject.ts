@@ -8,6 +8,7 @@ import {
   serverTimestamp,
   query,
   where,
+  updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { Subject } from "@/types/schedule";
@@ -29,12 +30,11 @@ export const useSubjects = () => {
         collection(db, "subjects"),
         where("userId", "==", currentUser.uid)
       );
-
       const unsubscribeSnapshot = onSnapshot(
         q,
         (snapshot) => {
           const data = snapshot.docs.map((doc) => {
-            const d = doc.data() as any;
+            const d = doc.data();
             return {
               id: doc.id,
               userId: d.userId,
@@ -59,14 +59,14 @@ export const useSubjects = () => {
     return () => unsubscribeAuth();
   }, []);
 
+  // ✅ CREATE
   const createSubject = async (
     title: string,
     description: string,
-    scheduledDate?: Date | null
+    scheduledDate: Date | null
   ) => {
     const currentUser = auth.currentUser;
     if (!currentUser) throw new Error("User not authenticated");
-
     await addDoc(collection(db, "subjects"), {
       userId: currentUser.uid,
       title,
@@ -76,26 +76,22 @@ export const useSubjects = () => {
     });
   };
 
+  // ✅ UPDATE
   const updateSubject = async (
     id: string,
     title: string,
     description: string,
     scheduledDate: Date | null
   ) => {
-    setSubjects((prev) =>
-      prev.map((s) =>
-        s.id === id
-          ? {
-              ...s,
-              title: title.trim(),
-              description: description.trim(),
-              scheduledDate: scheduledDate ?? null,
-            }
-          : s
-      )
-    );
+    await updateDoc(doc(db, "subjects", id), {
+      title,
+      description,
+      scheduledDate: scheduledDate || null,
+      // jangan update userId atau createdAt
+    });
   };
 
+  // ✅ DELETE
   const deleteSubject = async (id: string) => {
     await deleteDoc(doc(db, "subjects", id));
   };
