@@ -46,11 +46,11 @@
 
 ---
 
-**Periode: 11 Oktober 2025 - 17 Oktober 2025**
+**Periode: 13 Oktober 2025 - 17 Oktober 2025**
 
 #### Ariel Jonathan Wihardja (2372015)
 - ✅ **Firestore**:  
-  - Integrasi fitur Schedule dan Task dengan database Firestore
+  - Integrasi fitur Schedule dan Task dengan database Firestore untuk create dan delete
 
 #### Eben Praus Yosia (2372023)
 - ✅ **Fitur Schedule**:  
@@ -61,3 +61,20 @@
 - ✅ **Fitur Task**:  
   - Membuat fitur create dan delete tasks
   - Membuat timer untuk belajar dan istirahat pada task
+
+---
+
+**Periode: 20 Oktober 2025 - 24 Oktober 2025**
+
+#### Ariel Jonathan Wihardja (2372015)
+- ✅ **Firestore**:  
+  - Integrasi fitur Schedule dan Task dengan database Firestore untuk update
+
+#### Eben Praus Yosia (2372023)
+- ✅ **Fitur Schedule dan Task**:  
+  - Menambahkan fitur update untuk Schedule
+  - Membuat tombol checklist timer di task menjadi disable
+
+#### Derryl Eberhard Sangaptaras Sembiring (2372049)
+- ✅ **Fitur Task**:  
+  - Menambahkan fitur update untuk Task
