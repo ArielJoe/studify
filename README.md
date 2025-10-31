@@ -37,6 +37,8 @@ docker compose up --watch
 ```
 
 # 👥 Anggota Kelompok
-2372015 - Ariel Jonathan Wihardja  
-2372023 - Eben Praus Yosia  
-2372049 - Derryl Eberhard Sangaptaras Sembiring
+| No. | NRP     | Nama                                |
+|-----|----------|-------------------------------------|
+| 1   | 2372015  | Ariel Jonathan Wihardja             |
+| 2   | 2372023  | Eben Praus Yosia                    |
+| 3   | 2372049  | Derryl Eberhard Sangaptaras Sembiring |
