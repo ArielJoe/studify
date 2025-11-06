@@ -1,24 +1,24 @@
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Trash2, Calendar } from "lucide-react";
+import { BookOpen, Calendar as CalendarIcon, MoreVertical, Pencil, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-
-export interface Subject {
-  id: string;
-  title: string;
-  description: string;
-  scheduledDate?: Date;
-  createdAt: Date;
-}
+import { Subject } from "@/types/schedule";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface SubjectCardProps {
   subject: Subject;
   onSelect: (subject: Subject) => void;
+  onEdit: (subject: Subject) => void;   // <-- untuk buka dialog update
   onDelete: (id: string) => void;
 }
 
-const SubjectCard = ({ subject, onSelect, onDelete }: SubjectCardProps) => {
+const SubjectCard = ({ subject, onSelect, onEdit, onDelete }: SubjectCardProps) => {
   return (
     <Card
       className="group hover:shadow-medium transition-all duration-300 cursor-pointer bg-gradient-card backdrop-blur-sm border border-sky-100"
@@ -43,8 +43,13 @@ const SubjectCard = ({ subject, onSelect, onDelete }: SubjectCardProps) => {
                     variant="outline"
                     className="gap-1 border-sky-300 bg-sky-50 text-sky-600"
                   >
-                    <Calendar className="h-3 w-3" />
-                    {format(subject.scheduledDate, "MMM d, yyyy")}
+                    <CalendarIcon className="h-3 w-3" />
+                    {format(
+                      subject.scheduledDate instanceof Date
+                        ? subject.scheduledDate
+                        : new Date(subject.scheduledDate),
+                      "MMM d, yyyy"
+                    )}
                   </Badge>
                 )}
               </div>
@@ -55,18 +60,35 @@ const SubjectCard = ({ subject, onSelect, onDelete }: SubjectCardProps) => {
             </div>
           </div>
 
-          {/* kanan: tombol hapus */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(subject.id);
-            }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-sky-500 hover:bg-sky-50 hover:text-sky-700"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {/* kanan: dropdown tiga titik */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-sky-100"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreVertical className="h-5 w-5 text-sky-600" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuItem
+                onClick={() => onEdit(subject)}
+                className="cursor-pointer"
+              >
+                <Pencil className="h-4 w-4 mr-2 text-sky-600" />
+                Update
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onDelete(subject.id)}
+                className="cursor-pointer text-red-600 focus:text-red-600"
+              >
+                <Trash className="h-4 w-4 mr-2 text-red-600" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
     </Card>

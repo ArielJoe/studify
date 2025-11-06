@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -9,13 +10,12 @@ import {
   onAuthStateChanged,
   User,
 } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import GoogleIcon from "@/components/ui/google-icon";
-import Image from "next/image";
-import { db } from "@/lib/firebase";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -48,8 +48,8 @@ const LoginForm = () => {
           createdAt: serverTimestamp(),
           lastActive: serverTimestamp(),
           pomodoroConfig: {
-            focusDuration: 25, // menit
-            breakDuration: 5, // menit
+            focusDuration: 25,
+            breakDuration: 5,
           },
         });
       } else {
@@ -62,8 +62,7 @@ const LoginForm = () => {
 
       router.push("/dashboard");
     } catch (error) {
-      console.log("Google login error:", error);
-      // alert("Login gagal. Coba lagi.");
+      console.error("Google login error:", error);
     }
   };
 
@@ -85,12 +84,13 @@ const LoginForm = () => {
 
   return (
     <div className="w-full max-w-md">
-      <Card className="shadow-elegant border-0 bg-card/90 backdrop-blur-sm">
-        <CardContent className="space-y-6 p-8">
+      <Card className="shadow-lg border border-border bg-card/80 backdrop-blur-sm rounded-2xl">
+        <CardContent className="space-y-8 p-8">
           {!user ? (
             <>
+              {/* Header */}
               <div className="text-center space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                <h1 className="text-3xl font-bold tracking-tight">
                   Welcome back
                 </h1>
                 <p className="text-muted-foreground text-lg">
@@ -98,6 +98,7 @@ const LoginForm = () => {
                 </p>
               </div>
 
+              {/* Login Button */}
               <div className="space-y-4">
                 <Button
                   onClick={handleGoogleLogin}
@@ -109,84 +110,71 @@ const LoginForm = () => {
                   Continue with Google
                 </Button>
 
-                <div className="text-center text-sm text-muted-foreground">
-                  <p>
-                    By signing in, you agree to our{" "}
-                    <a
-                      href="#"
-                      className="font-medium hover:underline text-sky-400"
-                    >
-                      Terms of Service
-                    </a>{" "}
-                    and{" "}
-                    <a
-                      href="#"
-                      className="font-medium hover:underline text-sky-400"
-                    >
-                      Privacy Policy
-                    </a>
-                  </p>
-                </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  By signing in, you agree to our{" "}
+                  <a
+                    href="#"
+                    className="font-medium hover:underline text-sky-500"
+                  >
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="#"
+                    className="font-medium hover:underline text-sky-500"
+                  >
+                    Privacy Policy
+                  </a>
+                </p>
               </div>
             </>
           ) : (
-            <div className="text-center space-y-4">
-              {/* Avatar */}
-              <div className="flex justify-center">
-                {user.photoURL ? (
-                  <Image
-                    src={user.photoURL}
-                    alt={user.displayName || "User"}
-                    width={64}
-                    height={64}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                    {user.displayName?.charAt(0) ||
-                      user.email?.charAt(0) ||
-                      "?"}
-                  </div>
-                )}
+            <>
+              {/* User Info */}
+              <div className="text-center space-y-4">
+                {/* Avatar */}
+                <div className="flex justify-center">
+                  {user.photoURL ? (
+                    <Image
+                      src={user.photoURL}
+                      alt={user.displayName || "User"}
+                      width={80}
+                      height={80}
+                      className="rounded-full border-2 border-primary/40 shadow-md"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
+                      {user.displayName?.charAt(0).toUpperCase() ||
+                        user.email?.charAt(0).toUpperCase() ||
+                        "?"}
+                    </div>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">
+                    {user.displayName || "User"}
+                  </h2>
+                  <p className="text-muted-foreground text-sm">{user.email}</p>
+                </div>
+
+                {/* Logout */}
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 hover:bg-red-50 hover:text-red-600 transition"
+                >
+                  Logout
+                </Button>
               </div>
 
-              {/* Info pengguna */}
-              <div>
-                <h2 className="text-xl font-semibold text-foreground">
-                  {user.displayName || "User"}
-                </h2>
-                <p className="text-muted-foreground">{user.email}</p>
-              </div>
-
-              {/* Tombol logout */}
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className="mt-2"
-              >
-                Logout
-              </Button>
-            </div>
-
-            <div className="text-center text-sm text-muted-foreground">
-              <p>
-                By signing in, you agree to our{" "}
-                <a
-                  href="#"
-                  className="font-medium hover:underline text-sky-400"
-                >
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a
-                  href="#"
-                  className="font-medium hover:underline text-sky-400"
-                >
-                  Privacy Policy
-                </a>
+              {/* Footer */}
+              <p className="text-center text-xs text-muted-foreground pt-4 border-t border-border/60">
+                You are currently signed in with Google.
               </p>
-            </div>
+            </>
           )}
         </CardContent>
       </Card>
