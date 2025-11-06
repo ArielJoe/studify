@@ -1,3 +1,5 @@
+version: "1.1"
+
 services:
   app:
     build:
@@ -11,12 +13,6 @@ services:
     env_file:
       - .env
     command: npm run dev
-    develop:
-      watch:
-        - action: sync
-          path: ./src
-          target: /app/src
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: package.json
+    volumes:
+      - .:/app
+      - /app/node_modules
