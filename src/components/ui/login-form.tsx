@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import GoogleIcon from "@/components/ui/google-icon";
 import Image from "next/image";
 import { db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
@@ -36,23 +36,34 @@ const LoginForm = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
           photoURL: user.photoURL,
-          createdAt: new Date(),
-          lastActive: new Date(),
-        },
-        { merge: true }
-      );
+          createdAt: serverTimestamp(),
+          lastActive: serverTimestamp(),
+          pomodoroConfig: {
+            focusDuration: 25, // menit
+            breakDuration: 5, // menit
+          },
+        });
+      } else {
+        await setDoc(
+          userRef,
+          { lastActive: serverTimestamp() },
+          { merge: true }
+        );
+      }
 
       router.push("/dashboard");
     } catch (error) {
-      console.error("Google login error:", error);
-      alert("Login gagal. Coba lagi.");
+      console.log("Google login error:", error);
+      // alert("Login gagal. Coba lagi.");
     }
   };
 
@@ -156,6 +167,25 @@ const LoginForm = () => {
               >
                 Logout
               </Button>
+            </div>
+
+            <div className="text-center text-sm text-muted-foreground">
+              <p>
+                By signing in, you agree to our{" "}
+                <a
+                  href="#"
+                  className="font-medium hover:underline text-sky-400"
+                >
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a
+                  href="#"
+                  className="font-medium hover:underline text-sky-400"
+                >
+                  Privacy Policy
+                </a>
+              </p>
             </div>
           )}
         </CardContent>
