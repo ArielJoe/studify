@@ -4,7 +4,7 @@ Studify adalah aplikasi habit tracker berbasis web yang dirancang untuk membantu
 Fitur utama Studify meliputi:
 - 🔐 Autentikasi pengguna (login with Google)
 - ⏱️ Timer Pomodoro
-- 📝 Habit Tracker untuk mencatat dan memantau kebiasaan belajar
+- 📝 Habit Scheduling untuk membuat jadwal belajar
 - 📅 Jadwal belajar berbasis kalender sederhana
 - 🔔 Reminder otomatis via email
 - 📊 Statistik dasar: jumlah sesi Pomodoro dan progres habit
@@ -33,7 +33,13 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
 Lalu jalankan :
 ```
-docker compose up --watch
+docker compose up
+```
+
+atau
+
+```
+npm run dev
 ```
 
 # 👥 Anggota Kelompok
