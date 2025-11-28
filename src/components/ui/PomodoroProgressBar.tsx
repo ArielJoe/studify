@@ -34,6 +34,10 @@ const PomodoroProgressBar = ({
   }, [timerState.timeRemaining]);
 
   useEffect(() => {
+  setDisplayTime(timerState.totalTime);
+}, [timerState.isBreak, timerState.totalTime]);
+
+  useEffect(() => {
     if (!timerState.isActive || timerState.isPaused) return;
 
     const interval = setInterval(() => {

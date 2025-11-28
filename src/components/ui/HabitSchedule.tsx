@@ -247,6 +247,38 @@ const Page = () => {
     }
   };
 
+let notificationLock = false;
+
+const showSystemNotification = (title: string, body: string) => {
+
+  if (notificationLock) {
+    console.log("Notification blocked (duplicate)");
+    return;
+  }
+
+  notificationLock = true;
+
+  // unlock setelah 300ms 
+  setTimeout(() => {
+    notificationLock = false;
+  }, 300);
+
+  console.log("SEND NOTIFICATION:", title, body, Date.now());
+
+  if ("Notification" in window) {
+    if (Notification.permission === "granted") {
+      new Notification(title, { body });
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification(title, { body });
+        }
+      });
+    }
+  }
+};
+
+
   // ===== TIMER HANDLERS =====
   const handleTimerComplete = () => {
     if (timerState.isBreak) {
@@ -258,10 +290,7 @@ const Page = () => {
         timeRemaining: 0,
         totalTime: 0,
       });
-      toast({
-        title: "Break complete!",
-        description: "Ready to start your next task?",
-      });
+      showSystemNotification("Break complete!", "Ready to start your next task?");
     } else {
       // work session selesai → izinkan task tsb dicentang
       if (timerState.currentTaskId) {
@@ -279,10 +308,10 @@ const Page = () => {
             timeRemaining: breakSeconds,
             totalTime: breakSeconds,
           });
-          toast({
-            title: "Pomodoro complete! 🎉",
-            description: `Take a ${completedTask.breakMinutes}-minute break.`,
-          });
+          showSystemNotification(
+            "Pomodoro complete!",
+            `Time for a ${completedTask.breakMinutes}-minute break.`
+          );
         } else {
           setTimerState({
             isActive: false,
@@ -291,10 +320,7 @@ const Page = () => {
             timeRemaining: 0,
             totalTime: 0,
           });
-          toast({
-            title: "Task complete! 🎉",
-            description: "Great work! Ready for your next task?",
-          });
+          showSystemNotification("Task complete!", "Great work! Ready for your next task?");
         }
       }
     }
