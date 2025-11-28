@@ -62,7 +62,7 @@ const LoginForm = () => {
 
       router.push("/dashboard");
     } catch (error) {
-      console.error("Google login error:", error);
+      console.log("Google login error:", error);
     }
   };
 

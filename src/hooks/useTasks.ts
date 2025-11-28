@@ -59,7 +59,6 @@ export const useTasks = (subjectId: string | null) => {
     return () => unsubscribe();
   }, [subjectId]);
 
-  // ✅ CREATE
   const createTask = async (
     subjectId: string,
     title: string,
@@ -79,17 +78,14 @@ export const useTasks = (subjectId: string | null) => {
     });
   };
 
-  // ✅ UPDATE
   const updateTask = async (task: Task) => {
     await updateDoc(doc(db, "tasks", task.id), {
       title: task.title,
       pomodoroMinutes: task.pomodoroMinutes,
       breakMinutes: task.breakMinutes,
-      // jangan update userId, subjectId, createdAt
     });
   };
 
-  // ✅ TOGGLE (hanya boleh dicentang setelah Pomodoro selesai)
   const toggleTask = async (taskId: string, currentCompleted: boolean) => {
     const newCompleted = !currentCompleted;
     await updateDoc(doc(db, "tasks", taskId), {
@@ -98,7 +94,6 @@ export const useTasks = (subjectId: string | null) => {
     });
   };
 
-  // ✅ DELETE
   const deleteTask = async (id: string) => {
     await deleteDoc(doc(db, "tasks", id));
   };
