@@ -5,7 +5,7 @@ Fitur utama Studify meliputi:
 - 🔐 Autentikasi pengguna (login with Google)
 - ⏱️ Timer Pomodoro
 - 📝 Habit Scheduling untuk membuat jadwal belajar
-- 📅 Jadwal belajar berbasis kalender sederhana
+- 📅 Jadwal belajar berbasis kalender
 - 🔔 Reminder otomatis via email
 - 📊 Statistik dasar: jumlah sesi Pomodoro dan progres habit
 
