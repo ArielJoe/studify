@@ -12,10 +12,10 @@ import {
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import GoogleIcon from "@/components/ui/google-icon";
+import { Loader2, LogOut } from "lucide-react";
 
 const LoginForm = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -70,111 +70,98 @@ const LoginForm = () => {
     try {
       await signOut(auth);
     } catch (error) {
-      console.error("Logout error:", error);
+      console.log("Logout error:", error);
     }
   };
 
   if (loading) {
     return (
-      <div className="w-full max-w-md flex justify-center items-center h-32">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="flex flex-col items-center justify-center h-32 space-y-3">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <p className="text-xs text-muted-foreground animate-pulse">Checking status...</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-md">
-      <Card className="shadow-lg border border-border bg-card/80 backdrop-blur-sm rounded-2xl">
-        <CardContent className="space-y-8 p-8">
+    <div className="w-full max-w-sm mx-auto">
+      <Card className="border border-gray-100 shadow-md bg-white rounded-2xl overflow-hidden">
+        <CardContent className="">
           {!user ? (
-            <>
-              {/* Header */}
+            <div className="flex flex-col items-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
+              {/* Header Section */}
               <div className="text-center space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight">
-                  Welcome back
+                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3 text-xl">
+                  👋
+                </div>
+                <h1 className="text-xl font-bold tracking-tight text-gray-900">
+                  Welcome Back
                 </h1>
-                <p className="text-muted-foreground text-lg">
-                  Sign in to continue building your habits
+                <p className="text-muted-foreground text-xs sm:text-sm max-w-[240px] mx-auto leading-relaxed">
+                  Sign in to access your dashboard and continue your progress.
                 </p>
               </div>
 
-              {/* Login Button */}
-              <div className="space-y-4">
+              {/* Action Section */}
+              <div className="w-full">
                 <Button
                   onClick={handleGoogleLogin}
                   variant="outline"
-                  size="lg"
-                  className="w-full bg-white text-gray-900 border-gray-300 hover:bg-gray-50 transition-all duration-200"
+                  className="cursor-pointer w-full h-10 bg-white hover:bg-gray-50 text-gray-700 border-gray-200 font-medium transition-all duration-200 shadow-sm hover:shadow-md rounded-lg group text-sm"
                 >
-                  <GoogleIcon className="w-5 h-5 mr-3" />
+                  <GoogleIcon className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                   Continue with Google
                 </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-300">
+              {/* User Logged In View */}
+              <div className="relative mb-4 group">
+                {/* Blur effect dikurangi opacity-nya */}
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg group-hover:blur-xl transition-all opacity-30"></div>
+                {user.photoURL ? (
+                  <Image
+                    src={user.photoURL}
+                    alt={user.displayName || "User"}
+                    width={80}
+                    height={80}
+                    className="relative rounded-full border-2 border-white shadow-sm object-cover"
+                  />
+                ) : (
+                  <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-primary to-purple-500 border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-2xl">
+                    {user.displayName?.charAt(0).toUpperCase() || "U"}
+                  </div>
+                )}
+              </div>
 
-                <p className="text-center text-sm text-muted-foreground">
-                  By signing in, you agree to our{" "}
-                  <a
-                    href="#"
-                    className="font-medium hover:underline text-sky-500"
-                  >
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a
-                    href="#"
-                    className="font-medium hover:underline text-sky-500"
-                  >
-                    Privacy Policy
-                  </a>
+              <div className="text-center space-y-1 mb-6">
+                <h2 className="text-lg font-bold text-gray-900">
+                  {user.displayName || "Explorer"}
+                </h2>
+                <p className="text-xs text-muted-foreground font-medium">
+                  {user.email}
                 </p>
               </div>
-            </>
-          ) : (
-            <>
-              {/* User Info */}
-              <div className="text-center space-y-4">
-                {/* Avatar */}
-                <div className="flex justify-center">
-                  {user.photoURL ? (
-                    <Image
-                      src={user.photoURL}
-                      alt={user.displayName || "User"}
-                      width={80}
-                      height={80}
-                      className="rounded-full border-2 border-primary/40 shadow-md"
-                    />
-                  ) : (
-                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
-                      {user.displayName?.charAt(0).toUpperCase() ||
-                        user.email?.charAt(0).toUpperCase() ||
-                        "?"}
-                    </div>
-                  )}
-                </div>
 
-                {/* Info */}
-                <div>
-                  <h2 className="text-xl font-semibold text-foreground">
-                    {user.displayName || "User"}
-                  </h2>
-                  <p className="text-muted-foreground text-sm">{user.email}</p>
-                </div>
+              <div className="flex flex-col w-full gap-2">
+                <Button
+                  onClick={() => router.push("/dashboard")}
+                  className="cursor-pointer w-full h-10 rounded-lg font-semibold shadow-sm hover:shadow transition-all text-sm"
+                >
+                  Go to Dashboard
+                </Button>
 
-                {/* Logout */}
                 <Button
                   onClick={handleLogout}
-                  variant="outline"
-                  size="sm"
-                  className="mt-2 hover:bg-red-50 hover:text-red-600 transition"
+                  variant="ghost"
+                  className="cursor-pointer w-full h-10 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors text-xs"
                 >
-                  Logout
+                  <LogOut className="w-3.5 h-3.5 mr-2" />
+                  Sign out
                 </Button>
               </div>
-
-              {/* Footer */}
-              <p className="text-center text-xs text-muted-foreground pt-4 border-t border-border/60">
-                You are currently signed in with Google.
-              </p>
-            </>
+            </div>
           )}
         </CardContent>
       </Card>

@@ -1,49 +1,77 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
   Calendar,
-  CheckCircle2,
-  Clock,
-  Target,
   Timer,
   TrendingUp,
+  Loader2,
 } from "lucide-react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const Page = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
   const features = [
     {
       icon: Timer,
       title: "Pomodoro Timer",
-      description:
-        "Stay focused with customizable work and break intervals to maximize productivity",
+      description: "Stay focused with customizable work and break intervals to maximize productivity",
       href: "/pomodoro",
     },
     {
       icon: Calendar,
       title: "Habit Scheduling",
-      description:
-        "Plan your daily routines and build consistent habits that stick",
+      description: "Plan your daily routines and build consistent habits that stick",
       href: "/schedule",
     },
     {
       icon: TrendingUp,
       title: "Progress Tracking",
-      description:
-        "Visualize your growth with detailed statistics and achievement streaks",
+      description: "Visualize your growth with detailed statistics and achievement streaks",
       href: "/tracking",
     },
   ];
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <Loader2 className="w-10 h-10 animate-spin text-sky-500 mb-4" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <section
         className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
         style={{
-          background:
-            "linear-gradient(135deg, #5eead4 0%, #60a5fa 50%, #3b82f6 100%)", // toska → biru → biru keunguan
+          background: "linear-gradient(135deg, #5eead4 0%, #60a5fa 50%, #3b82f6 100%)",
         }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.15),transparent_50%)]" />
@@ -71,7 +99,6 @@ const Page = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-24 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16 animate-slide-up">
@@ -94,8 +121,7 @@ const Page = () => {
                   <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-md"
                     style={{
-                      background:
-                        "linear-gradient(135deg, #5eead4 0%, #3b82f6 100%)",
+                      background: "linear-gradient(135deg, #5eead4 0%, #3b82f6 100%)",
                     }}
                   >
                     <feature.icon className="w-7 h-7 text-white" />
@@ -121,7 +147,6 @@ const Page = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="py-12 px-4 bg-white border-t">
         <div className="max-w-6xl mx-auto text-center">
           <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r text-sky-400 bg-clip-text">

@@ -6,6 +6,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { PomodoroTimer } from "@/components/ui/PomodoroTimer";
+import { Loader2 } from "lucide-react";
 
 export default function PomodoroPage() {
   const [pomodoroConfig, setPomodoroConfig] = useState<{
@@ -57,8 +58,8 @@ export default function PomodoroPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <Loader2 className="w-10 h-10 animate-spin text-sky-500 mb-4" />
       </div>
     );
   }

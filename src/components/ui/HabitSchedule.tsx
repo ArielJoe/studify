@@ -5,14 +5,14 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowLeft, Timer } from "lucide-react";
+import { Plus, ArrowLeft, Timer, Loader2 } from "lucide-react";
 import SubjectCard from "@/components/ui/SubjectCard";
 import TaskList from "@/components/ui/TaskList";
 import PomodoroProgressBar from "@/components/ui/PomodoroProgressBar";
 import CreateSubjectDialog from "@/components/ui/CreateSubjectDialog";
 import CreateTaskDialog from "@/components/ui/CreateTaskDialog";
 import UpdateTaskDialog from "./UpdateTaskDialog";
-import UpdateSubjectDialog from "@/components/ui/UpdateSubjectDialog"; // <-- dialog update subject
+import UpdateSubjectDialog from "@/components/ui/UpdateSubjectDialog";
 import { useSubjects } from "@/hooks/useSubject";
 import { useTasks } from "@/hooks/useTasks";
 import { toast } from "@/hooks/use-toast";
@@ -30,12 +30,17 @@ export interface TimerState {
 const Page = () => {
   const router = useRouter();
 
+  // --- 1. Auth States ---
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  // --- 2. Data Hooks ---
   const {
     subjects,
     loading: subjectsLoading,
     createSubject,
     deleteSubject,
-    updateSubject, // <-- wajib ada di hook (frontend-only OK)
+    updateSubject,
   } = useSubjects();
 
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -49,15 +54,14 @@ const Page = () => {
     deleteTask,
   } = useTasks(selectedSubject?.id || null);
 
+  // --- 3. UI States ---
   const [showSubjectDialog, setShowSubjectDialog] = useState(false);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
   const [showUpdateTaskDialog, setUpdateTaskDialog] = useState(false);
   const [taskSelected, setTaskSeleceted] = useState<Task | null>(null);
 
-  // ✅ hanya task yg baru selesai pomodoro boleh di-check
   const [completableTaskId, setCompletableTaskId] = useState<string | null>(null);
 
-  // ✅ state dialog update subject
   const [showUpdateSubjectDialog, setShowUpdateSubjectDialog] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
 
@@ -69,17 +73,21 @@ const Page = () => {
     totalTime: 0,
   });
 
-  // Redirect ke login jika belum login
+  // --- 4. Auth Logic & Redirect ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
         router.push("/login");
       }
+      setIsAuthLoading(false);
     });
     return () => unsubscribe();
   }, [router]);
 
-  // ===== SUBJECT HANDLERS =====
+  // --- 5. Handlers ---
   const handleCreateSubject = async (
     title: string,
     description: string,
@@ -150,16 +158,15 @@ const Page = () => {
 
       setShowUpdateSubjectDialog(false);
 
-      // sinkronkan panel detail kalau sedang melihat subject ini
       if (selectedSubject?.id === payload.id) {
         setSelectedSubject((prev) =>
           prev
             ? {
-                ...prev,
-                title: payload.title,
-                description: payload.description,
-                scheduledDate: payload.scheduledDate ?? null,
-              }
+              ...prev,
+              title: payload.title,
+              description: payload.description,
+              scheduledDate: payload.scheduledDate ?? null,
+            }
             : prev
         );
       }
@@ -173,7 +180,6 @@ const Page = () => {
     }
   };
 
-  // ===== TASK HANDLERS =====
   const handleCreateTask = async (
     title: string,
     pomodoroMinutes: number,
@@ -235,7 +241,6 @@ const Page = () => {
     if (!task) return;
     try {
       await toggleTask(taskId, task.completed);
-      // setelah dicentang, reset izin
       setCompletableTaskId(null);
     } catch (error) {
       console.error("Error toggling task:", error);
@@ -247,42 +252,33 @@ const Page = () => {
     }
   };
 
-let notificationLock = false;
+  let notificationLock = false;
 
-const showSystemNotification = (title: string, body: string) => {
-
-  if (notificationLock) {
-    console.log("Notification blocked (duplicate)");
-    return;
-  }
-
-  notificationLock = true;
-
-  // unlock setelah 300ms 
-  setTimeout(() => {
-    notificationLock = false;
-  }, 300);
-
-  console.log("SEND NOTIFICATION:", title, body, Date.now());
-
-  if ("Notification" in window) {
-    if (Notification.permission === "granted") {
-      new Notification(title, { body });
-    } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          new Notification(title, { body });
-        }
-      });
+  const showSystemNotification = (title: string, body: string) => {
+    if (notificationLock) {
+      return;
     }
-  }
-};
 
+    notificationLock = true;
+    setTimeout(() => {
+      notificationLock = false;
+    }, 300);
 
-  // ===== TIMER HANDLERS =====
+    if ("Notification" in window) {
+      if (Notification.permission === "granted") {
+        new Notification(title, { body });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            new Notification(title, { body });
+          }
+        });
+      }
+    }
+  };
+
   const handleTimerComplete = () => {
     if (timerState.isBreak) {
-      // break selesai
       setTimerState({
         isActive: false,
         isPaused: false,
@@ -292,7 +288,6 @@ const showSystemNotification = (title: string, body: string) => {
       });
       showSystemNotification("Break complete!", "Ready to start your next task?");
     } else {
-      // work session selesai → izinkan task tsb dicentang
       if (timerState.currentTaskId) {
         setCompletableTaskId(timerState.currentTaskId);
       }
@@ -320,7 +315,10 @@ const showSystemNotification = (title: string, body: string) => {
             timeRemaining: 0,
             totalTime: 0,
           });
-          showSystemNotification("Task complete!", "Great work! Ready for your next task?");
+          showSystemNotification(
+            "Task complete!",
+            "Great work! Ready for your next task?"
+          );
         }
       }
     }
@@ -344,10 +342,11 @@ const showSystemNotification = (title: string, body: string) => {
     });
   };
 
-  if (subjectsLoading || tasksLoading) {
+  // --- 6. Global Loading (Auth or Data) ---
+  if (isAuthLoading || !isAuthenticated || subjectsLoading || tasksLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <Loader2 className="w-10 h-10 animate-spin text-sky-500 mb-4" />
       </div>
     );
   }
@@ -365,7 +364,7 @@ const showSystemNotification = (title: string, body: string) => {
               Habit Scheduling
             </h1>
           </div>
-        <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg">
             Organize your studies with Habit Scheduling
           </p>
         </header>
@@ -420,7 +419,7 @@ const showSystemNotification = (title: string, body: string) => {
                     subject={subject}
                     onSelect={setSelectedSubject}
                     onDelete={handleDeleteSubject}
-                    onEdit={openUpdateSubject}  // ✅ WAJIB ADA
+                    onEdit={openUpdateSubject}
                   />
                 ))}
               </div>
