@@ -76,9 +76,8 @@ const LoginForm = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-32 space-y-3">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        <p className="text-xs text-muted-foreground animate-pulse">Checking status...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <Loader2 className="w-10 h-10 animate-spin text-sky-500 mb-4" />
       </div>
     );
   }
