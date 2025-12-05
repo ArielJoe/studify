@@ -9,6 +9,7 @@ import {
   query,
   where,
   deleteDoc,
+  getDocs,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { Task } from "@/types/schedule";
@@ -17,19 +18,40 @@ export const useTasks = (subjectId: string | null) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // =========================================
+  // 🔥 MODE 1: subjectId === null → GET ALL TASKS
+  // =========================================
+  useEffect(() => {
+    if (subjectId !== null) return; // skip jika sedang filter subject
+
+    const loadAllTasks = async () => {
+      const taskSnapshots = await getDocs(collection(db, "tasks"));
+      const allTasks = taskSnapshots.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Task[];
+
+      setTasks(allTasks);
+      setLoading(false);
+    };
+
+    loadAllTasks();
+  }, [subjectId]);
+
+  // =========================================
+  // 🔥 MODE 2: subjectId !== null → REALTIME LISTENER
+  // =========================================
   useEffect(() => {
     const currentUser = auth.currentUser;
-    if (!currentUser || !subjectId) {
-      setTasks([]);
-      setLoading(false);
-      return;
-    }
+
+    if (!currentUser || !subjectId) return;
 
     const q = query(
       collection(db, "tasks"),
       where("userId", "==", currentUser.uid),
       where("subjectId", "==", subjectId)
     );
+
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
@@ -47,6 +69,7 @@ export const useTasks = (subjectId: string | null) => {
             createdAt: d.createdAt?.toDate() || new Date(),
           } as Task;
         });
+
         setTasks(data);
         setLoading(false);
       },
@@ -59,7 +82,10 @@ export const useTasks = (subjectId: string | null) => {
     return () => unsubscribe();
   }, [subjectId]);
 
-  // ✅ CREATE
+  // =========================================
+  // 🔥 CRUD FUNCTIONS
+  // =========================================
+
   const createTask = async (
     subjectId: string,
     title: string,
@@ -68,6 +94,7 @@ export const useTasks = (subjectId: string | null) => {
   ) => {
     const currentUser = auth.currentUser;
     if (!currentUser) throw new Error("User not authenticated");
+
     await addDoc(collection(db, "tasks"), {
       userId: currentUser.uid,
       subjectId,
@@ -79,17 +106,14 @@ export const useTasks = (subjectId: string | null) => {
     });
   };
 
-  // ✅ UPDATE
   const updateTask = async (task: Task) => {
     await updateDoc(doc(db, "tasks", task.id), {
       title: task.title,
       pomodoroMinutes: task.pomodoroMinutes,
       breakMinutes: task.breakMinutes,
-      // jangan update userId, subjectId, createdAt
     });
   };
 
-  // ✅ TOGGLE (hanya boleh dicentang setelah Pomodoro selesai)
   const toggleTask = async (taskId: string, currentCompleted: boolean) => {
     const newCompleted = !currentCompleted;
     await updateDoc(doc(db, "tasks", taskId), {
@@ -98,7 +122,6 @@ export const useTasks = (subjectId: string | null) => {
     });
   };
 
-  // ✅ DELETE
   const deleteTask = async (id: string) => {
     await deleteDoc(doc(db, "tasks", id));
   };
