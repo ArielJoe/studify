@@ -78,3 +78,19 @@
 #### Derryl Eberhard Sangaptaras Sembiring (2372049)
 - ✅ **Fitur Task**:  
   - Menambahkan fitur update untuk Task
+
+---
+
+**Periode: 01 Desember 2025 - 05 Desember 2025**
+
+#### Ariel Jonathan Wihardja (2372015)
+- ✅ **Fitur Progress Tracking**:  
+  - Integrasi dengan Firestore
+
+#### Eben Praus Yosia (2372023)
+- ✅ **Fitur Progress Tracking**:
+  - Membuat UI
+
+#### Derryl Eberhard Sangaptaras Sembiring (2372049)
+- ✅ **Fitur Habit Scheduling**:  
+  - Membuat kalender

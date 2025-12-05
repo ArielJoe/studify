@@ -31,8 +31,18 @@ import {
 } from "recharts";
 import { Task } from "@/types/schedule";
 
+// Helper untuk format tanggal sumbu X
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
+};
+
+// Helper untuk membandingkan tanggal tanpa jam
+const isSameDay = (d1: Date, d2: Date) => {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
 };
 
 const Page = () => {
@@ -43,12 +53,16 @@ const Page = () => {
   const [totalFocusMinutes, setTotalFocusMinutes] = useState(0);
   const [completedTasksCount, setCompletedTasksCount] = useState(0);
   const [completionRate, setCompletionRate] = useState(0);
+
   const [weeklyData, setWeeklyData] = useState<
     { name: string; minutes: number }[]
   >([]);
   const [subjectPerformance, setSubjectPerformance] = useState<
     { name: string; tasks: number }[]
   >([]);
+
+  // State baru untuk menghitung proporsi bar subject
+  const [maxSubjectTaskCount, setMaxSubjectTaskCount] = useState(1);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -82,7 +96,6 @@ const Page = () => {
           return {
             id: doc.id,
             ...data,
-            // Konversi Firestore Timestamp ke Date JS
             completedAt:
               data.completedAt instanceof Timestamp
                 ? data.completedAt.toDate()
@@ -94,7 +107,7 @@ const Page = () => {
           } as Task;
         });
 
-        // 3. Calculate Statistics
+        // --- 3. LOGIKA STATISTIK ---
         const completedTasks = tasks.filter((t) => t.completed);
 
         // A. Total Metrics
@@ -110,26 +123,26 @@ const Page = () => {
             : 0
         );
 
-        // B. Weekly Data (Last 7 Days)
+        // B. Weekly Data (Fix Logic)
+        // Buat array 7 hari terakhir (dari H-6 sampai Hari Ini)
         const last7Days = Array.from({ length: 7 }, (_, i) => {
           const d = new Date();
-          d.setDate(d.getDate() - (6 - i));
-          d.setHours(0, 0, 0, 0);
+          d.setDate(d.getDate() - (6 - i)); // Mundur dari 6 hari lalu ke 0 (hari ini)
           return d;
         });
 
         const weeklyChartData = last7Days.map((date) => {
-          const dayMinutes = completedTasks
-            .filter((t) => {
-              if (!t.completedAt) return false;
-              const tDate = new Date(t.completedAt);
-              return (
-                tDate.getDate() === date.getDate() &&
-                tDate.getMonth() === date.getMonth() &&
-                tDate.getFullYear() === date.getFullYear()
-              );
-            })
-            .reduce((acc, t) => acc + t.pomodoroMinutes, 0);
+          // Cari task yang selesai pada tanggal 'date'
+          const tasksOnThisDay = completedTasks.filter((t) => {
+            if (!t.completedAt) return false;
+            return isSameDay(t.completedAt, date);
+          });
+
+          // Jumlahkan menit
+          const dayMinutes = tasksOnThisDay.reduce(
+            (acc, t) => acc + t.pomodoroMinutes,
+            0
+          );
 
           return {
             name: formatDate(date),
@@ -138,18 +151,24 @@ const Page = () => {
         });
         setWeeklyData(weeklyChartData);
 
-        // C. Subject Performance
+        // C. Subject Performance (Fix Logic Bar Width)
         const subjectStats: Record<string, number> = {};
         completedTasks.forEach((t) => {
-          const subjectName = subjectsMap.get(t.subjectId) || "Unknown Subject";
+          const subjectName = subjectsMap.get(t.subjectId) || "Uncategorized";
           subjectStats[subjectName] = (subjectStats[subjectName] || 0) + 1;
         });
 
+        // Ubah ke array dan sort dari terbanyak
         const subjectChartData = Object.entries(subjectStats)
           .map(([name, count]) => ({ name, tasks: count }))
-          .sort((a, b) => b.tasks - a.tasks) // Sort terbanyak
-          .slice(0, 5); // Ambil top 5
+          .sort((a, b) => b.tasks - a.tasks)
+          .slice(0, 5); // Ambil Top 5
 
+        // Cari nilai maksimum untuk kalkulasi lebar bar (agar proporsional)
+        const maxVal =
+          subjectChartData.length > 0 ? subjectChartData[0].tasks : 1;
+
+        setMaxSubjectTaskCount(maxVal);
         setSubjectPerformance(subjectChartData);
       } catch (error) {
         console.error("Error fetching tracking data:", error);
@@ -171,7 +190,6 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
-      {/* Header */}
       <header className="bg-white border-b px-6 py-8 mb-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
@@ -240,7 +258,7 @@ const Page = () => {
 
         {/* 2. Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left: Weekly Activity */}
+          {/* Left: Weekly Activity Chart */}
           <Card className="shadow-sm border-gray-100">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -251,8 +269,9 @@ const Page = () => {
             <CardContent>
               <div className="h-[300px] w-full">
                 {weeklyData.every((d) => d.minutes === 0) ? (
-                  <div className="h-full flex items-center justify-center text-gray-400 text-sm">
-                    No activity recorded this week yet.
+                  <div className="h-full flex flex-col items-center justify-center text-gray-400 text-sm gap-2">
+                    <TrendingUp className="w-8 h-8 opacity-20" />
+                    <p>No activity recorded yet.</p>
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
@@ -281,6 +300,10 @@ const Page = () => {
                           border: "none",
                           boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                         }}
+                        formatter={(value: number) => [
+                          `${value} min`,
+                          "Focus Time",
+                        ]}
                       />
                       <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
                         {weeklyData.map((entry, index) => (
@@ -308,8 +331,9 @@ const Page = () => {
             <CardContent>
               <div className="space-y-6">
                 {subjectPerformance.length === 0 ? (
-                  <div className="h-[250px] flex items-center justify-center text-gray-400 text-sm">
-                    Complete tasks to see subject breakdown.
+                  <div className="h-[250px] flex flex-col items-center justify-center text-gray-400 text-sm gap-2">
+                    <CheckCircle2 className="w-8 h-8 opacity-20" />
+                    <p>No completed tasks yet.</p>
                   </div>
                 ) : (
                   subjectPerformance.map((subject, index) => (
@@ -318,16 +342,18 @@ const Page = () => {
                         <span className="font-medium text-gray-700">
                           {subject.name}
                         </span>
-                        <span className="text-gray-500">
-                          {subject.tasks} tasks
+                        <span className="text-gray-500 font-medium">
+                          {subject.tasks}{" "}
+                          {subject.tasks === 1 ? "task" : "tasks"}
                         </span>
                       </div>
-                      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-sky-400 to-blue-500 rounded-full"
+                          className="h-full bg-gradient-to-r from-sky-400 to-blue-500 rounded-full transition-all duration-500 ease-out"
                           style={{
+                            // PERBAIKAN: Gunakan maxSubjectTaskCount sebagai pembagi
                             width: `${
-                              (subject.tasks / completedTasksCount) * 100
+                              (subject.tasks / maxSubjectTaskCount) * 100
                             }%`,
                           }}
                         />
