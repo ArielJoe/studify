@@ -82,10 +82,6 @@ export const useTasks = (subjectId: string | null) => {
     return () => unsubscribe();
   }, [subjectId]);
 
-  // =========================================
-  // 🔥 CRUD FUNCTIONS
-  // =========================================
-
   const createTask = async (
     subjectId: string,
     title: string,

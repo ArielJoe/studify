@@ -1,3 +1,5 @@
+"use client";
+
 import HabitSchedule from "@/components/ui/HabitSchedule";
 
 const Page = () => {

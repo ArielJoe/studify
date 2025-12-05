@@ -59,7 +59,6 @@ export const useSubjects = () => {
     return () => unsubscribeAuth();
   }, []);
 
-  // ✅ CREATE
   const createSubject = async (
     title: string,
     description: string,
@@ -76,7 +75,6 @@ export const useSubjects = () => {
     });
   };
 
-  // ✅ UPDATE
   const updateSubject = async (
     id: string,
     title: string,
@@ -87,11 +85,9 @@ export const useSubjects = () => {
       title,
       description,
       scheduledDate: scheduledDate || null,
-      // jangan update userId atau createdAt
     });
   };
 
-  // ✅ DELETE
   const deleteSubject = async (id: string) => {
     await deleteDoc(doc(db, "subjects", id));
   };

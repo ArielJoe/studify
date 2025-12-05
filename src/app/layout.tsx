@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -16,7 +15,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Studify",
-  description: "Habit tracker app",
+  description: "Build better habits, one day at a time",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({
