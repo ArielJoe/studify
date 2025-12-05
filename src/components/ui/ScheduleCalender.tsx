@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Subject, Task } from "@/types/schedule";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { ChevronRight, Clock, Coffee } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -13,14 +17,16 @@ interface ScheduleCalendarProps {
   selectedDate?: Date;
 }
 
-const ScheduleCalendar = ({ 
-  subjects, 
-  tasks, 
-  onDateSelect, 
+const ScheduleCalendar = ({
+  subjects,
+  tasks,
+  onDateSelect,
   onSelectSubject,
-  selectedDate 
+  selectedDate,
 }: ScheduleCalendarProps) => {
-  const [expandedSubjects, setExpandedSubjects] = useState<Set<string>>(new Set());
+  const [expandedSubjects, setExpandedSubjects] = useState<Set<string>>(
+    new Set()
+  );
 
   // Get all scheduled dates from subjects
   const scheduledDates = subjects
@@ -30,15 +36,16 @@ const ScheduleCalendar = ({
   // Check if a date has scheduled subjects
   const hasScheduledSubject = (date: Date) => {
     return scheduledDates.some(
-      (scheduledDate) =>
-        scheduledDate.toDateString() === date.toDateString()
+      (scheduledDate) => scheduledDate.toDateString() === date.toDateString()
     );
   };
 
   // Get subjects for a specific date
   const getSubjectsForDate = (date: Date) => {
     return subjects.filter(
-      (s) => s.scheduledDate && s.scheduledDate.toDateString() === date.toDateString()
+      (s) =>
+        s.scheduledDate &&
+        s.scheduledDate.toDateString() === date.toDateString()
     );
   };
 
@@ -75,10 +82,11 @@ const ScheduleCalendar = ({
           scheduled: (date) => hasScheduledSubject(date),
         }}
         modifiersClassNames={{
-          scheduled: "bg-primary/20 text-primary font-semibold relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-primary",
+          scheduled:
+            "bg-primary/20 text-primary font-semibold relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-primary",
         }}
       />
-      
+
       {selectedDate && getSubjectsForDate(selectedDate).length > 0 && (
         <div className="mt-4 space-y-2">
           <h4 className="text-sm font-medium text-muted-foreground">
@@ -89,7 +97,9 @@ const ScheduleCalendar = ({
               console.log("subject:", subject);
               const subjectTasks = getTasksForSubject(subject.id);
               const isExpanded = expandedSubjects.has(subject.id);
-              {console.log("tasks:", subjectTasks)}
+              {
+                console.log("tasks:", subjectTasks);
+              }
               return (
                 <Collapsible key={subject.id} open={isExpanded}>
                   <div className="bg-sky-100 rounded-lg border border-primary/20 overflow-hidden">
@@ -119,12 +129,13 @@ const ScheduleCalendar = ({
                         <span className="text-foreground">{subject.title}</span>
                         {subjectTasks.length > 0 && (
                           <span className="text-xs text-muted-foreground ml-2">
-                            ({subjectTasks.length} task{subjectTasks.length !== 1 ? 's' : ''})
+                            ({subjectTasks.length} task
+                            {subjectTasks.length !== 1 ? "s" : ""})
                           </span>
                         )}
                       </button>
                     </div>
-             
+
                     <CollapsibleContent>
                       {subjectTasks.length > 0 && (
                         <div className="px-3 pb-2 space-y-1 border-t border-primary/10 pt-2">
