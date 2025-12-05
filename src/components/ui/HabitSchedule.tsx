@@ -5,7 +5,7 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowLeft, Timer, Loader2 } from "lucide-react";
+import { Plus, ArrowLeft, Timer, Loader2, Calendar } from "lucide-react";
 import SubjectCard from "@/components/ui/SubjectCard";
 import TaskList from "@/components/ui/TaskList";
 import PomodoroProgressBar from "@/components/ui/PomodoroProgressBar";
@@ -60,7 +60,9 @@ const Page = () => {
   const [showUpdateTaskDialog, setUpdateTaskDialog] = useState(false);
   const [taskSelected, setTaskSeleceted] = useState<Task | null>(null);
 
-  const [completableTaskId, setCompletableTaskId] = useState<string | null>(null);
+  const [completableTaskId, setCompletableTaskId] = useState<string | null>(
+    null
+  );
 
   const [showUpdateSubjectDialog, setShowUpdateSubjectDialog] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
@@ -162,11 +164,11 @@ const Page = () => {
         setSelectedSubject((prev) =>
           prev
             ? {
-              ...prev,
-              title: payload.title,
-              description: payload.description,
-              scheduledDate: payload.scheduledDate ?? null,
-            }
+                ...prev,
+                title: payload.title,
+                description: payload.description,
+                scheduledDate: payload.scheduledDate ?? null,
+              }
             : prev
         );
       }
@@ -190,7 +192,12 @@ const Page = () => {
       return;
     }
     try {
-      await createTask(selectedSubject!.id, title, pomodoroMinutes, breakMinutes);
+      await createTask(
+        selectedSubject!.id,
+        title,
+        pomodoroMinutes,
+        breakMinutes
+      );
       toast({
         title: "Task created",
         description: `${title} with ${pomodoroMinutes}min Pomodoro and ${breakMinutes}min break has been added.`,
@@ -286,14 +293,19 @@ const Page = () => {
         timeRemaining: 0,
         totalTime: 0,
       });
-      showSystemNotification("Break complete!", "Ready to start your next task?");
+      showSystemNotification(
+        "Break complete!",
+        "Ready to start your next task?"
+      );
     } else {
       if (timerState.currentTaskId) {
         setCompletableTaskId(timerState.currentTaskId);
       }
 
       if (timerState.currentTaskId) {
-        const completedTask = tasks.find((t) => t.id === timerState.currentTaskId);
+        const completedTask = tasks.find(
+          (t) => t.id === timerState.currentTaskId
+        );
         if (completedTask && completedTask.breakMinutes > 0) {
           const breakSeconds = completedTask.breakMinutes * 60;
           setTimerState({
@@ -354,21 +366,20 @@ const Page = () => {
   const subjectTasks = tasks.filter((t) => t.subjectId === selectedSubject?.id);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-6xl mx-auto py-8 px-4 space-y-6">
-        {/* Header */}
-        <header className="text-center space-y-2 mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Timer className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-sky-500">
+    <div>
+      {/* Header */}
+      <header className="bg-white border-b px-6 py-8 mb-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-2">
+            <Calendar className="w-8 h-8 text-sky-500" />
+            <h1 className="text-3xl font-bold text-gray-900">
               Habit Scheduling
             </h1>
           </div>
-          <p className="text-muted-foreground text-lg">
-            Organize your studies with Habit Scheduling
-          </p>
-        </header>
+        </div>
+      </header>
 
+      <div className="container max-w-6xl mx-auto px-4 space-y-6">
         {/* Timer Section */}
         {timerState.isActive && (
           <PomodoroProgressBar
@@ -382,8 +393,7 @@ const Page = () => {
         {/* Main Content */}
         {!selectedSubject ? (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-semibold">Your Subjects</h2>
+            <div className="flex items-center justify-end">
               <Button
                 onClick={() => setShowSubjectDialog(true)}
                 className="bg-sky-400 hover:bg-sky-500 text-white transition-colors"
@@ -397,9 +407,12 @@ const Page = () => {
               <div className="text-center py-16">
                 <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-12 border border-border shadow-medium">
                   <Timer className="h-16 w-16 mx-auto mb-4 text-primary opacity-50" />
-                  <h3 className="text-xl font-semibold mb-2">No subjects yet</h3>
+                  <h3 className="text-xl font-semibold mb-2">
+                    No subjects yet
+                  </h3>
                   <p className="text-muted-foreground mb-6">
-                    Create your first subject to start tracking your study sessions
+                    Create your first subject to start tracking your study
+                    sessions
                   </p>
                   <Button
                     onClick={() => setShowSubjectDialog(true)}
@@ -446,8 +459,12 @@ const Page = () => {
             </div>
 
             <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-6 border border-border shadow-medium">
-              <h2 className="text-3xl font-bold mb-2">{selectedSubject.title}</h2>
-              <p className="text-muted-foreground">{selectedSubject.description}</p>
+              <h2 className="text-3xl font-bold mb-2">
+                {selectedSubject.title}
+              </h2>
+              <p className="text-muted-foreground">
+                {selectedSubject.description}
+              </p>
             </div>
 
             <TaskList
