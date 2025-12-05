@@ -17,6 +17,7 @@ import { useSubjects } from "@/hooks/useSubject";
 import { useTasks } from "@/hooks/useTasks";
 import { toast } from "@/hooks/use-toast";
 import type { Subject, Task } from "@/types/schedule";
+import ScheduleCalendar from "./ScheduleCalender";
 
 export interface TimerState {
   isActive: boolean;
@@ -105,12 +106,7 @@ const Page = () => {
       });
       setShowSubjectDialog(false);
     } catch (error) {
-      console.error("Error creating subject:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create subject. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to create subject.", variant: "destructive" });
     }
   };
 
@@ -121,16 +117,9 @@ const Page = () => {
         title: "Subject deleted",
         description: "The subject and its tasks have been removed.",
       });
-      if (selectedSubject?.id === id) {
-        setSelectedSubject(null);
-      }
-    } catch (error) {
-      console.error("Error deleting subject:", error);
-      toast({
-        title: "Error",
-        description: "Failed to delete subject. Please try again.",
-        variant: "destructive",
-      });
+      if (selectedSubject?.id === id) setSelectedSubject(null);
+    } catch {
+      toast({ title: "Error", description: "Failed to delete subject.", variant: "destructive" });
     }
   };
 
@@ -139,46 +128,17 @@ const Page = () => {
     setShowUpdateSubjectDialog(true);
   };
 
-  const handleUpdateSubject = async (payload: {
-    id: string;
-    title: string;
-    description: string;
-    scheduledDate?: Date;
-  }) => {
+  const handleUpdateSubject = async (payload: { id: string; title: string; description: string; scheduledDate?: Date; }) => {
     try {
-      await updateSubject(
-        payload.id,
-        payload.title,
-        payload.description,
-        payload.scheduledDate ?? null
-      );
-
-      toast({
-        title: "Subject updated",
-        description: `${payload.title} has been updated successfully.`,
-      });
-
+      await updateSubject(payload.id, payload.title, payload.description, payload.scheduledDate ?? null);
+      toast({ title: "Subject updated", description: `${payload.title} has been updated.` });
       setShowUpdateSubjectDialog(false);
 
       if (selectedSubject?.id === payload.id) {
-        setSelectedSubject((prev) =>
-          prev
-            ? {
-                ...prev,
-                title: payload.title,
-                description: payload.description,
-                scheduledDate: payload.scheduledDate ?? null,
-              }
-            : prev
-        );
+        setSelectedSubject((prev) => prev ? { ...prev, title: payload.title, description: payload.description, scheduledDate: payload.scheduledDate ?? null } : prev);
       }
-    } catch (error) {
-      console.error("Error updating subject:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update subject. Please try again.",
-        variant: "destructive",
-      });
+    } catch {
+      toast({ title: "Error", description: "Failed to update subject.", variant: "destructive" });
     }
   };
 
@@ -203,13 +163,8 @@ const Page = () => {
         description: `${title} with ${pomodoroMinutes}min Pomodoro and ${breakMinutes}min break has been added.`,
       });
       setShowTaskDialog(false);
-    } catch (error) {
-      console.error("Error creating task:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create task. Please try again.",
-        variant: "destructive",
-      });
+    } catch {
+      toast({ title: "Error", description: "Failed to create task.", variant: "destructive" });
     }
   };
 
@@ -220,27 +175,13 @@ const Page = () => {
 
   const startTask = (task: Task) => {
     const totalSeconds = task.pomodoroMinutes * 60;
-    setTimerState({
-      isActive: true,
-      isPaused: false,
-      isBreak: false,
-      timeRemaining: totalSeconds,
-      totalTime: totalSeconds,
-      currentTaskId: task.id,
-    });
-
-    toast({
-      title: "Pomodoro started",
-      description: `Focus for ${task.pomodoroMinutes} minutes on: ${task.title}`,
-    });
+    setTimerState({ isActive: true, isPaused: false, isBreak: false, timeRemaining: totalSeconds, totalTime: totalSeconds, currentTaskId: task.id });
+    toast({ title: "Pomodoro started", description: `Focus for ${task.pomodoroMinutes} minutes on: ${task.title}` });
   };
 
   const editTask = (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
-    if (task) {
-      setTaskSeleceted(task);
-      setUpdateTaskDialog(true);
-    }
+    if (task) { setTaskSeleceted(task); setUpdateTaskDialog(true); }
   };
 
   const handleToggleTask = async (taskId: string) => {
@@ -336,23 +277,8 @@ const Page = () => {
     }
   };
 
-  const togglePause = () => {
-    setTimerState({ ...timerState, isPaused: !timerState.isPaused });
-  };
-
-  const resetTimer = () => {
-    setTimerState({
-      isActive: false,
-      isPaused: false,
-      isBreak: false,
-      timeRemaining: 0,
-      totalTime: 0,
-    });
-    toast({
-      title: "Timer reset",
-      description: "You can start a new Pomodoro session anytime.",
-    });
-  };
+  const togglePause = () => setTimerState({ ...timerState, isPaused: !timerState.isPaused });
+  const resetTimer = () => setTimerState({ isActive: false, isPaused: false, isBreak: false, timeRemaining: 0, totalTime: 0 });
 
   // --- 6. Global Loading (Auth or Data) ---
   if (isAuthLoading || !isAuthenticated || subjectsLoading || tasksLoading) {
@@ -441,20 +367,11 @@ const Page = () => {
         ) : (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <Button
-                variant="ghost"
-                onClick={() => setSelectedSubject(null)}
-                className="gap-2 text-sky-600 hover:bg-sky-50"
-              >
-                <ArrowLeft className="h-4 w-4 text-sky-600" />
-                Back to Subjects
+              <Button variant="ghost" onClick={() => setSelectedSubject(null)} className="gap-2 text-sky-600 hover:bg-sky-50">
+                <ArrowLeft className="h-4 w-4 text-sky-600" /> Back to Subjects
               </Button>
-              <Button
-                onClick={() => setShowTaskDialog(true)}
-                className="bg-sky-400 hover:bg-sky-500 text-white transition-colors"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                New Task
+              <Button onClick={() => setShowTaskDialog(true)} className="bg-sky-400 hover:bg-sky-500 text-white transition-colors">
+                <Plus className="mr-2 h-4 w-4" /> New Task
               </Button>
             </div>
 
@@ -479,33 +396,12 @@ const Page = () => {
         )}
 
         {/* Dialogs */}
-        <CreateSubjectDialog
-          open={showSubjectDialog}
-          onOpenChange={setShowSubjectDialog}
-          onSubmit={handleCreateSubject}
-        />
-
-        <CreateTaskDialog
-          open={showTaskDialog}
-          onOpenChange={setShowTaskDialog}
-          onSubmit={handleCreateTask}
-        />
-
+        <CreateSubjectDialog open={showSubjectDialog} onOpenChange={setShowSubjectDialog} onSubmit={handleCreateSubject} />
+        <CreateTaskDialog open={showTaskDialog} onOpenChange={setShowTaskDialog} onSubmit={handleCreateTask} />
         {taskSelected && (
-          <UpdateTaskDialog
-            task={taskSelected}
-            open={showUpdateTaskDialog}
-            onOpenChange={setUpdateTaskDialog}
-            onSubmit={handleUpdateTask}
-          />
+          <UpdateTaskDialog task={taskSelected} open={showUpdateTaskDialog} onOpenChange={setUpdateTaskDialog} onSubmit={handleUpdateTask} />
         )}
-
-        <UpdateSubjectDialog
-          open={showUpdateSubjectDialog}
-          onOpenChange={setShowUpdateSubjectDialog}
-          subject={editingSubject}
-          onSubmit={handleUpdateSubject}
-        />
+        <UpdateSubjectDialog open={showUpdateSubjectDialog} onOpenChange={setShowUpdateSubjectDialog} subject={editingSubject} onSubmit={handleUpdateSubject} />
       </div>
     </div>
   );

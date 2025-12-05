@@ -9,6 +9,7 @@ import {
   query,
   where,
   deleteDoc,
+  getDocs,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { Task } from "@/types/schedule";
@@ -17,19 +18,40 @@ export const useTasks = (subjectId: string | null) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // =========================================
+  // 🔥 MODE 1: subjectId === null → GET ALL TASKS
+  // =========================================
+  useEffect(() => {
+    if (subjectId !== null) return; // skip jika sedang filter subject
+
+    const loadAllTasks = async () => {
+      const taskSnapshots = await getDocs(collection(db, "tasks"));
+      const allTasks = taskSnapshots.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Task[];
+
+      setTasks(allTasks);
+      setLoading(false);
+    };
+
+    loadAllTasks();
+  }, [subjectId]);
+
+  // =========================================
+  // 🔥 MODE 2: subjectId !== null → REALTIME LISTENER
+  // =========================================
   useEffect(() => {
     const currentUser = auth.currentUser;
-    if (!currentUser || !subjectId) {
-      setTasks([]);
-      setLoading(false);
-      return;
-    }
+
+    if (!currentUser || !subjectId) return;
 
     const q = query(
       collection(db, "tasks"),
       where("userId", "==", currentUser.uid),
       where("subjectId", "==", subjectId)
     );
+
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
@@ -47,6 +69,7 @@ export const useTasks = (subjectId: string | null) => {
             createdAt: d.createdAt?.toDate() || new Date(),
           } as Task;
         });
+
         setTasks(data);
         setLoading(false);
       },
@@ -67,6 +90,7 @@ export const useTasks = (subjectId: string | null) => {
   ) => {
     const currentUser = auth.currentUser;
     if (!currentUser) throw new Error("User not authenticated");
+
     await addDoc(collection(db, "tasks"), {
       userId: currentUser.uid,
       subjectId,
