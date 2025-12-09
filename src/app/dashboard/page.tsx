@@ -26,22 +26,20 @@ const Page = () => {
     {
       icon: Timer,
       title: "Pomodoro Timer",
-      description:
-        "Stay focused with customizable work and break intervals to maximize productivity",
+      description: "Maximize focus with customizable work and break intervals.",
       href: "/pomodoro",
     },
     {
       icon: Calendar,
       title: "Habit Scheduling",
-      description:
-        "Plan your daily routines and build consistent habits that stick",
+      description: "Organize your daily routines to build consistent habits.",
       href: "/schedule",
     },
     {
       icon: TrendingUp,
       title: "Progress Tracking",
       description:
-        "Visualize your growth with detailed statistics and achievement streaks",
+        "Visualize your growth with insights and achievement streaks.",
       href: "/tracking",
     },
   ];
