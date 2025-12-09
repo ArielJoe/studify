@@ -93,6 +93,7 @@ const Page = () => {
           : `${title} has been added to your schedule.`,
       });
       setShowSubjectDialog(false);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -291,21 +292,25 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
-      {/* Header (Style Progress Tracking: White BG, Border Bottom, Left Aligned) */}
-      <header className="bg-white border-b px-6 py-8 mb-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-2">
+      {/* Header Responsive */}
+      <header className="bg-white border-b sticky top-0 z-10 transition-all duration-200 px-4 py-4 md:px-6 md:py-8 mb-6 md:mb-8">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          {/* Bagian Kiri: Back Button + Icon + Judul */}
+          <div className="flex items-center gap-2 md:gap-4">
             <button
               onClick={() => router.back()}
-              className="p-2 rounded-full hover:bg-gray-100 transition"
+              className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Go back"
             >
-              <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
+              <ArrowLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-700" />
             </button>
 
-            {/* Icon + Judul */}
-            <Calendar className="w-8 h-8 text-sky-500" />
-            <h1 className="text-3xl font-bold text-gray-900">Habit Scheduling</h1>
-
+            <div className="flex items-center gap-2 md:gap-3">
+              <Calendar className="w-6 h-6 md:w-8 md:h-8 text-sky-500" />
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-tight">
+                Habit Scheduling
+              </h1>
+            </div>
           </div>
         </div>
       </header>
