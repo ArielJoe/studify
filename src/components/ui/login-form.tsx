@@ -51,6 +51,11 @@ const LoginForm = () => {
             focusDuration: 25,
             breakDuration: 5,
           },
+          streak: {
+            currentStreak: 0,
+            longestStreak: 0,
+            lastActiveDate: null,
+          },
         });
       } else {
         await setDoc(

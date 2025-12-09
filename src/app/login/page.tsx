@@ -26,15 +26,6 @@ const Page = () => {
       {/* Right side - Login Form */}
       <div className="flex-1 lg:flex-none lg:w-1/2 flex flex-col justify-center px-6 lg:px-12 bg-background">
         <div className="w-full max-w-md mx-auto">
-          <div className="lg:hidden text-center mb-8">
-            <h1 className="text-3xl font-bold gradient-hero bg-clip-text text-transparent">
-              HabitFlow
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Your personal habit tracking companion
-            </p>
-          </div>
-
           <LoginForm />
         </div>
       </div>
