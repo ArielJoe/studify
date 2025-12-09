@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  Loader2,
+  TrendingUp,
+  CheckCircle2,
+  Clock,
+  CalendarDays,
+} from "lucide-react";
 import {
   collection,
   query,
@@ -13,15 +20,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 
-import {
-  Loader2,
-  TrendingUp,
-  CheckCircle2,
-  Clock,
-  CalendarDays,
-} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import StreakCalendar from "@/components/ui/streak-calender";
 import {
   BarChart,
   Bar,
@@ -33,7 +32,6 @@ import {
   Cell,
 } from "recharts";
 
-import { Task } from "@/types/schedule";
 import {
   Select,
   SelectTrigger,
@@ -41,30 +39,22 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+
+import { Task } from "@/types/schedule";
 import { StreakCard } from "@/components/ui/StreakCard";
+import StreakCalendar from "@/components/ui/StreakCalendar";
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
-};
-
-// Helper untuk membandingkan tanggal tanpa jam
-const isSameDay = (d1: Date, d2: Date) => {
-  return (
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate()
-  );
 };
 
 const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
+  // States
   const [maxSubjectTaskCount, setMaxSubjectTaskCount] = useState(1);
-
-  const [range, setRange] = useState("7"); // default: last 7 days
-
-  // State Data
+  const [range, setRange] = useState("7");
   const [totalFocusMinutes, setTotalFocusMinutes] = useState(0);
   const [completedTasksCount, setCompletedTasksCount] = useState(0);
   const [completionRate, setCompletionRate] = useState(0);
@@ -75,8 +65,8 @@ const Page = () => {
   const [subjectPerformance, setSubjectPerformance] = useState<
     { name: string; tasks: number }[]
   >([]);
+  const [activeDates, setActiveDates] = useState<Date[]>([]);
 
-  /* ----------------------------- FETCH -------------------------------- */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -85,7 +75,6 @@ const Page = () => {
       }
 
       try {
-        // 1. Fetch Subjects
         const subjectsRef = collection(db, "subjects");
         const subjectsQuery = query(
           subjectsRef,
@@ -99,7 +88,6 @@ const Page = () => {
           subjectsMap.set(doc.id, data.title);
         });
 
-        // 2. Fetch Tasks
         const tasksRef = collection(db, "tasks");
         const tasksQuery = query(tasksRef, where("userId", "==", user.uid));
         const tasksSnap = await getDocs(tasksQuery);
@@ -120,10 +108,12 @@ const Page = () => {
           } as Task;
         });
 
-        /* --------------------------- CALCULATIONS --------------------------- */
         const completedTasks = tasks.filter((t) => t.completed);
+        const dates = completedTasks
+          .filter((t) => t.completedAt)
+          .map((t) => t.completedAt as Date);
+        setActiveDates(dates);
 
-        // A. Total Metrics
         const totalMinutes = completedTasks.reduce(
           (acc, t) => acc + t.pomodoroMinutes,
           0
@@ -136,15 +126,8 @@ const Page = () => {
             : 0
         );
 
-        /* ----------------------- WEEKLY DATA FILTER ------------------------ */
-
-        const selectedRange = parseInt(range); // 7 / 14 / 30 / 999 (all time)
-
-        const periodDays =
-          selectedRange === 999
-            ? 90 // default show 3 months if ALL TIME
-            : selectedRange;
-
+        const selectedRange = parseInt(range);
+        const periodDays = selectedRange === 999 ? 90 : selectedRange;
         const lastXdays = Array.from({ length: periodDays }, (_, i) => {
           const d = new Date();
           d.setDate(d.getDate() - (periodDays - 1 - i));
@@ -164,42 +147,33 @@ const Page = () => {
               );
             })
             .reduce((acc, t) => acc + t.pomodoroMinutes, 0);
-
           return { name: formatDate(date), minutes: dayMinutes };
         });
-
         setWeeklyData(weeklyChartData);
 
-        /* -------------------- SUBJECT PERFORMANCE -------------------- */
         const subjectStats: Record<string, number> = {};
         completedTasks.forEach((t) => {
           const subjectName = subjectsMap.get(t.subjectId) || "Uncategorized";
           subjectStats[subjectName] = (subjectStats[subjectName] || 0) + 1;
         });
-
-        // Ubah ke array dan sort dari terbanyak
         const subjectChartData = Object.entries(subjectStats)
           .map(([name, count]) => ({ name, tasks: count }))
           .sort((a, b) => b.tasks - a.tasks)
           .slice(0, 5);
-
-        // Cari nilai maksimum untuk kalkulasi lebar bar (agar proporsional)
         const maxVal =
           subjectChartData.length > 0 ? subjectChartData[0].tasks : 1;
-
         setMaxSubjectTaskCount(maxVal);
         setSubjectPerformance(subjectChartData);
       } catch (error) {
-        console.error("Error fetching tracking data:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     });
 
     return () => unsubscribe();
-  }, [router, range]); // <-- filter akan trigger ulang fetch
+  }, [router, range]);
 
-  /* ------------------------------- UI -------------------------------- */
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white">
@@ -211,35 +185,28 @@ const Page = () => {
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
       <header className="bg-white border-b px-4 py-4 md:px-6 md:py-8 mb-6 md:mb-8 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between">
-            {/* Kiri: Tombol Back & Judul */}
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-3">
+            <button
+              onClick={() => router.back()}
+              className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition"
+            >
+              <ArrowLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-700 cursor-pointer" />
+            </button>
             <div className="flex items-center gap-2 md:gap-3">
-              <button
-                onClick={() => router.back()}
-                className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition"
-                aria-label="Go back"
-              >
-                <ArrowLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-700 cursor-pointer" />
-              </button>
-
-              <div className="flex items-center gap-2 md:gap-3">
-                <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-sky-500" />
-                <h1 className="text-lg md:text-3xl font-bold text-gray-900 leading-tight">
-                  Progress Tracking
-                </h1>
-              </div>
+              <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-sky-500" />
+              <h1 className="text-lg md:text-3xl font-bold text-gray-900 leading-tight">
+                Progress Tracking
+              </h1>
             </div>
-
-            <StreakCard />
           </div>
+          <StreakCard />
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 space-y-8">
-        {/* Summary Cards */}
+        {/* 1. Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Total Focus */}
           <Card className="border-sky-100 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm text-gray-500">
@@ -257,7 +224,6 @@ const Page = () => {
             </CardContent>
           </Card>
 
-          {/* Completed Tasks */}
           <Card className="border-sky-100 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm text-gray-500">
@@ -275,7 +241,6 @@ const Page = () => {
             </CardContent>
           </Card>
 
-          {/* Completion Rate */}
           <Card className="border-sky-100 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm text-gray-500">
@@ -294,84 +259,28 @@ const Page = () => {
           </Card>
         </div>
 
-        {/* Charts */}
+        {/* 2. Grid Middle (Streak Calendar Kiri - Top Subjects Kanan) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Chart */}
-          <Card className="shadow-sm border-gray-100">
-            <CardHeader className="flex flex-col gap-2 w-full">
-              <div className="flex w-full justify-between items-center">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <CalendarDays className="w-5 h-5 text-sky-500" />
-                  Focus Activity
-                </CardTitle>
-
-                {/* ---------------- FILTER DROPDOWN ---------------- */}
-                <Select value={range} onValueChange={setRange}>
-                  <SelectTrigger className="w-[200px] cursor-pointer">
-                    <SelectValue placeholder="Select range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="7" className="cursor-pointer">
-                      Last 7 days
-                    </SelectItem>
-                    <SelectItem value="14" className="cursor-pointer">
-                      Last 14 days
-                    </SelectItem>
-                    <SelectItem value="30" className="cursor-pointer">
-                      Last 30 days
-                    </SelectItem>
-                    <SelectItem value="999" className="cursor-pointer">
-                      All Time
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-
-            <CardContent>
-              <div className="h-[300px] w-full">
-                {weeklyData.every((d) => d.minutes === 0) ? (
-                  <div className="h-full flex items-center justify-center text-gray-400 text-sm">
-                    No activity recorded.
-                  </div>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={weeklyData}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis
-                        dataKey="name"
-                        tick={{ fill: "#6b7280", fontSize: 12 }}
-                      />
-                      <YAxis
-                        tick={{ fill: "#6b7280", fontSize: 12 }}
-                        axisLine={false}
-                        tickLine={false}
-                      />
-                      <Tooltip />
-                      <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
-                        {weeklyData.map((entry, i) => (
-                          <Cell
-                            key={i}
-                            fill={entry.minutes > 0 ? "#38bdf8" : "#e5e7eb"}
-                          />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Right: Subject Breakdown */}
+          {/* KIRI: Streak Calendar */}
           <Card className="shadow-sm border-gray-100">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-sky-500" />
-                Top Subjects by Completed Tasks
+                <CalendarDays className="w-5 h-5 text-sky-500" />
+                Streak Calendar
               </CardTitle>
             </CardHeader>
+            <CardContent>
+              <StreakCalendar activeDates={activeDates} />
+            </CardContent>
+          </Card>
 
+          {/* KANAN: Top Subjects */}
+          <Card className="shadow-sm border-gray-100">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-sky-500" /> Top Subjects
+              </CardTitle>
+            </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 {subjectPerformance.length === 0 ? (
@@ -391,12 +300,10 @@ const Page = () => {
                           {subject.tasks === 1 ? "task" : "tasks"}
                         </span>
                       </div>
-
-                      <div className="h-2 w-full bg-gray-100 rounded-full">
+                      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-sky-400 to-blue-500 rounded-full transition-all duration-500 ease-out"
                           style={{
-                            // PERBAIKAN: Gunakan maxSubjectTaskCount sebagai pembagi
                             width: `${
                               (subject.tasks / maxSubjectTaskCount) * 100
                             }%`,
@@ -411,18 +318,73 @@ const Page = () => {
           </Card>
         </div>
 
+        {/* 3. Bottom Full Width: Focus Activity Chart */}
         <Card className="shadow-sm border-gray-100 lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CalendarDays className="w-5 h-5 text-sky-500" /> Streak Calendar
-              Preview
-            </CardTitle>
+          <CardHeader className="flex flex-col gap-2 w-full">
+            <div className="flex w-full justify-between items-center">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <CalendarDays className="w-5 h-5 text-sky-500" /> Focus Activity
+              </CardTitle>
+              <Select value={range} onValueChange={setRange}>
+                <SelectTrigger className="w-[140px] cursor-pointer text-sm">
+                  <SelectValue placeholder="Select range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">Last 7 days</SelectItem>
+                  <SelectItem value="14">Last 14 days</SelectItem>
+                  <SelectItem value="30">Last 30 days</SelectItem>
+                  <SelectItem value="999">All Time</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </CardHeader>
           <CardContent>
-            <StreakCalendar />
+            <div className="h-[300px] w-full">
+              {weeklyData.every((d) => d.minutes === 0) ? (
+                <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+                  No activity recorded.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={weeklyData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#f3f4f6"
+                    />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fill: "#6b7280", fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fill: "#6b7280", fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "#f9fafb" }}
+                      contentStyle={{
+                        borderRadius: "8px",
+                        border: "none",
+                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      }}
+                    />
+                    <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
+                      {weeklyData.map((entry, i) => (
+                        <Cell
+                          key={i}
+                          fill={entry.minutes > 0 ? "#38bdf8" : "#e5e7eb"}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </CardContent>
         </Card>
-        {/* End of Kalender Runtutan */}
       </main>
     </div>
   );

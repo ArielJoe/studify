@@ -19,7 +19,6 @@ export default function PomodoroPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        // ✅ Redirect ke login jika belum login
         router.push("/login");
         setLoading(false);
         return;
@@ -64,7 +63,6 @@ export default function PomodoroPage() {
     );
   }
 
-  // ✅ Jangan render timer jika pomodoroConfig null (seharusnya tidak terjadi karena redirect)
   if (!pomodoroConfig) {
     return null;
   }
@@ -75,6 +73,8 @@ export default function PomodoroPage() {
         initialFocus={pomodoroConfig.focusDuration}
         initialBreak={pomodoroConfig.breakDuration}
         onSaveSettings={saveConfig}
+        // 👇 INI KUNCINYA: Mengaktifkan auto-start untuk break
+        autoStartBreak={true}
       />
     </div>
   );

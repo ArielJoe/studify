@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,9 @@ export interface TimerState {
 
 const Page = () => {
   const router = useRouter();
+
+  // --- 1. Ref untuk mencegah Double Notification ---
+  const isProcessingRef = useRef(false);
 
   const {
     subjects,
@@ -77,6 +80,31 @@ const Page = () => {
     });
     return () => unsubscribe();
   }, [router]);
+
+  // Request Izin Notifikasi saat halaman dimuat
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+      }
+    }
+  }, []);
+
+  // --- Helper: Play Sound & Show Notification ---
+  const playAlert = (title: string, body: string) => {
+    // Mainkan Audio (Pastikan file alarm.mp3 ada di folder public)
+    const audio = new Audio("/alarm.mp3");
+    audio.play().catch((err) => console.log("Audio play blocked:", err));
+
+    // Tampilkan Notifikasi Browser
+    if (Notification.permission === "granted") {
+      new Notification(title, {
+        body: body,
+        icon: "/icon.png", // Opsional
+        requireInteraction: true,
+      });
+    }
+  };
 
   // ===== SUBJECT HANDLERS =====
   const handleCreateSubject = async (
@@ -226,10 +254,20 @@ const Page = () => {
     setCompletableTaskId(null);
   };
 
-  // ===== TIMER HANDLER (With setTimeout fix) =====
+  // ===== 2. PERBAIKAN LOGIKA TIMER SELESAI =====
   const handleTimerComplete = () => {
+    // Cek apakah sedang memproses? Jika ya, berhenti.
+    if (isProcessingRef.current) return;
+
+    // Kunci pintu agar tidak ada eksekusi ganda
+    isProcessingRef.current = true;
+
+    // Gunakan setTimeout untuk menghindari konflik Render React
     setTimeout(() => {
       if (timerState.isBreak) {
+        // --- Break Selesai ---
+        playAlert("Break Finished!", "Time to get back to work! 💪");
+
         setTimerState({
           isActive: false,
           isPaused: false,
@@ -237,14 +275,17 @@ const Page = () => {
           timeRemaining: 0,
           totalTime: 0,
         });
-        toast({
-          title: "Break complete!",
-          description: "Ready for next task.",
-        });
       } else if (timerState.currentTaskId) {
+        // --- Fokus Selesai ---
         setCompletableTaskId(timerState.currentTaskId);
         const task = tasks.find((t) => t.id === timerState.currentTaskId);
+
         if (task && task.breakMinutes > 0) {
+          playAlert(
+            "Focus Time Complete!",
+            `Great job! Take a ${task.breakMinutes} min break ☕`
+          );
+
           setTimerState({
             isActive: true,
             isPaused: false,
@@ -252,11 +293,9 @@ const Page = () => {
             timeRemaining: task.breakMinutes * 60,
             totalTime: task.breakMinutes * 60,
           });
-          toast({
-            title: "Pomodoro complete!",
-            description: `Time for a ${task.breakMinutes}-minute break.`,
-          });
         } else {
+          playAlert("Task Complete!", "You finished the timer! 🎉");
+
           setTimerState({
             isActive: false,
             isPaused: false,
@@ -267,6 +306,11 @@ const Page = () => {
           toast({ title: "Task complete!", description: "Great work!" });
         }
       }
+
+      // Buka kunci pintu setelah 1 detik
+      setTimeout(() => {
+        isProcessingRef.current = false;
+      }, 1000);
     }, 0);
   };
 
@@ -291,11 +335,10 @@ const Page = () => {
   const subjectTasks = tasks.filter((t) => t.subjectId === selectedSubject?.id);
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-12">
+    <div className="min-h-screen bg-background">
       {/* Header Responsive */}
       <header className="bg-white border-b sticky top-0 z-10 transition-all duration-200 px-4 py-4 md:px-6 md:py-8 mb-6 md:mb-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          {/* Bagian Kiri: Back Button + Icon + Judul */}
           <div className="flex items-center gap-2 md:gap-4">
             <button
               onClick={() => router.back()}

@@ -18,12 +18,14 @@ interface PomodoroTimerProps {
   initialFocus: number;
   initialBreak: number;
   onSaveSettings: (focus: number, breakDur: number) => Promise<void>;
+  autoStartBreak?: boolean;
 }
 
 export function PomodoroTimer({
   initialFocus,
   initialBreak,
   onSaveSettings,
+  autoStartBreak = false,
 }: PomodoroTimerProps) {
   const [mode, setMode] = useState<TimerMode>("task");
   const [timeLeft, setTimeLeft] = useState(initialFocus * 60);
@@ -63,6 +65,7 @@ export function PomodoroTimer({
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning, timeLeft]);
 
   const handleTimerComplete = () => {
@@ -73,21 +76,21 @@ export function PomodoroTimer({
         "Waktu istirahat! 🎉",
         `Sesi belajar ke-${sessions + 1} selesai. Ambil jeda sejenak.`
       );
-      switchMode("break");
+      switchMode("break", autoStartBreak);
     } else {
       showSystemNotification(
         "Istirahat selesai! 💪",
         "Waktunya kembali fokus belajar."
       );
-      switchMode("task");
+      switchMode("task", false);
     }
   };
 
-  const switchMode = (newMode: TimerMode) => {
+  const switchMode = (newMode: TimerMode, autoStart: boolean = false) => {
     setMode(newMode);
     const duration = newMode === "task" ? settings.task : settings.break;
     setTimeLeft(duration * 60);
-    setIsRunning(false);
+    setIsRunning(autoStart);
   };
 
   const toggleTimer = () => setIsRunning(!isRunning);
