@@ -20,15 +20,6 @@ import {
   Clock,
   CalendarDays,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-  DialogHeader,
-} from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import StreakCalendar from "@/components/ui/streak-calender";
 import {
@@ -43,8 +34,6 @@ import {
 } from "recharts";
 
 import { Task } from "@/types/schedule";
-
-/* ---------------- SELECT COMPONENT IMPORT ---------------- */
 import {
   Select,
   SelectTrigger,
@@ -52,6 +41,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { StreakCard } from "@/components/ui/StreakCard";
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
@@ -78,7 +68,6 @@ const Page = () => {
   const [totalFocusMinutes, setTotalFocusMinutes] = useState(0);
   const [completedTasksCount, setCompletedTasksCount] = useState(0);
   const [completionRate, setCompletionRate] = useState(0);
-  const [showStreakPopup, setShowStreakPopup] = useState(false);
 
   const [weeklyData, setWeeklyData] = useState<
     { name: string; minutes: number }[]
@@ -242,65 +231,7 @@ const Page = () => {
               </div>
             </div>
 
-            {/* Kanan: Streak Button & Dialog */}
-            <Dialog open={showStreakPopup} onOpenChange={setShowStreakPopup}>
-              <DialogTrigger asChild>
-                <div
-                  className="flex items-center gap-1.5 md:gap-2 bg-orange-100 px-3 py-1.5 md:px-4 md:py-2 rounded-full cursor-pointer hover:bg-orange-200 transition shadow-sm"
-                  onClick={() => setShowStreakPopup(true)}
-                >
-                  <span className="text-orange-600 font-semibold text-xs md:text-base flex items-center gap-1">
-                    🔥 0 day
-                  </span>
-                </div>
-              </DialogTrigger>
-
-              <DialogContent className="max-w-[90vw] md:max-w-[500px] p-0 border-none bg-transparent shadow-none">
-                <VisuallyHidden>
-                  <DialogHeader>
-                    <DialogTitle>Streak Popup</DialogTitle>
-                    <DialogDescription>
-                      Informasi streak harian kamu
-                    </DialogDescription>
-                  </DialogHeader>
-                </VisuallyHidden>
-
-                <div className="relative bg-gradient-to-b from-white to-orange-50 rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden flex items-center justify-between gap-4">
-                  {/* Glow Background */}
-                  <div className="absolute inset-0 -z-10">
-                    <div className="absolute top-[-40px] right-[-40px] w-32 h-32 md:w-40 md:h-40 bg-orange-400/20 blur-3xl rounded-full"></div>
-                    <div className="absolute bottom-[-40px] left-[-40px] w-32 h-32 md:w-40 md:h-40 bg-orange-300/20 blur-3xl rounded-full"></div>
-                  </div>
-
-                  {/* LEFT SIDE: TEXT */}
-                  <div className="text-left flex flex-col z-10">
-                    {/* Title */}
-                    <p className="text-gray-700 text-lg md:text-2xl font-bold tracking-wide">
-                      Kamu belajar
-                    </p>
-
-                    {/* Streak Number */}
-                    <h2 className="text-7xl md:text-[80px] font-black text-orange-500 leading-none drop-shadow-sm my-1 md:my-3">
-                      0
-                    </h2>
-
-                    {/* Subtitle */}
-                    <p className="text-gray-700 text-lg md:text-2xl font-bold">
-                      hari berturut-turut!
-                    </p>
-                  </div>
-
-                  {/* RIGHT SIDE: FLAME ICON */}
-                  <div className="relative shrink-0 z-10 mr-2 md:mr-6">
-                    <div className="absolute inset-0 blur-2xl bg-orange-500/30 rounded-full -z-10 scale-150"></div>
-                    {/* Perbesar ukuran emoji agar seimbang dengan teks */}
-                    <span className="text-orange-500 text-[80px] md:text-[140px] drop-shadow-md leading-none">
-                      🔥
-                    </span>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <StreakCard />
           </div>
         </div>
       </header>

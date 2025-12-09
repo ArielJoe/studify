@@ -16,21 +16,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"; // Pastikan import dari UI Component yang benar
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { DialogHeader } from "@/components/ui/dialog";
+import { StreakCard } from "@/components/ui/StreakCard";
 
 const Page = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const [showStreakPopup, setShowStreakPopup] = useState(false);
 
   const features = [
     {
@@ -139,64 +130,7 @@ const Page = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* --- STREAK POPUP --- */}
-            <Dialog open={showStreakPopup} onOpenChange={setShowStreakPopup}>
-              <DialogTrigger asChild>
-                <div
-                  className="flex items-center gap-1.5 md:gap-2 bg-orange-100 px-3 py-1.5 md:px-4 md:py-2 rounded-full cursor-pointer hover:bg-orange-200 transition shadow-sm"
-                  onClick={() => setShowStreakPopup(true)}
-                >
-                  <span className="text-orange-600 font-semibold text-xs md:text-base flex items-center gap-1">
-                    🔥 0 day
-                  </span>
-                </div>
-              </DialogTrigger>
-
-              {/* Tambahkan class positioning di sini:
-                  - fixed: Agar melayang di atas konten lain
-                  - top-1/2 left-1/2: Titik awal di tengah layar
-                  - -translate-x-1/2 -translate-y-1/2: Menggeser elemen agar benar-benar di tengah (center anchor)
-              */}
-              <DialogContent className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[90vw] md:max-w-[500px] p-0 border-none bg-transparent shadow-none outline-none">
-                <VisuallyHidden>
-                  <DialogHeader>
-                    <DialogTitle>Streak Popup</DialogTitle>
-                    <DialogDescription>
-                      Informasi streak harian kamu
-                    </DialogDescription>
-                  </DialogHeader>
-                </VisuallyHidden>
-
-                <div className="relative bg-gradient-to-b from-white to-orange-50 rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden flex items-center justify-between gap-4">
-                  {/* Glow Background */}
-                  <div className="absolute inset-0 -z-10">
-                    <div className="absolute top-[-40px] right-[-40px] w-32 h-32 md:w-40 md:h-40 bg-orange-400/20 blur-3xl rounded-full"></div>
-                    <div className="absolute bottom-[-40px] left-[-40px] w-32 h-32 md:w-40 md:h-40 bg-orange-300/20 blur-3xl rounded-full"></div>
-                  </div>
-
-                  {/* LEFT SIDE: TEXT */}
-                  <div className="text-left flex flex-col z-10">
-                    <p className="text-gray-700 text-lg md:text-2xl font-bold tracking-wide">
-                      Kamu belajar
-                    </p>
-                    <h2 className="text-7xl md:text-[80px] font-black text-orange-500 leading-none drop-shadow-sm my-1 md:my-3">
-                      0
-                    </h2>
-                    <p className="text-gray-700 text-lg md:text-2xl font-bold">
-                      hari berturut-turut!
-                    </p>
-                  </div>
-
-                  {/* RIGHT SIDE: FLAME ICON */}
-                  <div className="relative shrink-0 z-10 mr-2 md:mr-6">
-                    <div className="absolute inset-0 blur-2xl bg-orange-500/30 rounded-full -z-10 scale-150"></div>
-                    <span className="text-orange-500 text-[80px] md:text-[140px] drop-shadow-md leading-none">
-                      🔥
-                    </span>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <StreakCard />
           </div>
         </div>
       </header>
