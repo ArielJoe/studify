@@ -11,6 +11,8 @@ import {
   CheckCircle2,
   Clock,
   CalendarDays,
+  BarChart3,
+  Layers,
 } from "lucide-react";
 import {
   collection,
@@ -275,18 +277,22 @@ const Page = () => {
           </Card>
 
           {/* KANAN: Top Subjects */}
-          <Card className="shadow-sm border-gray-100">
+          <Card className="shadow-sm border-gray-100 flex flex-col">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-sky-500" /> Top Subjects
+                {/* Menggunakan Layers agar lebih cocok untuk "Subject" */}
+                <Layers className="w-5 h-5 text-sky-500" /> Top Subjects
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
+            <CardContent className="flex-1">
+              <div className="space-y-6 h-full">
                 {subjectPerformance.length === 0 ? (
-                  <div className="h-[250px] flex flex-col items-center justify-center text-gray-400 text-sm gap-2">
-                    <CheckCircle2 className="w-8 h-8 opacity-20" />
-                    <p>No completed tasks yet.</p>
+                  /* EMPTY STATE: TOP SUBJECTS */
+                  <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-gray-400 gap-3">
+                    <Layers className="w-12 h-12 opacity-20" />
+                    <p className="text-sm font-medium">
+                      No completed tasks per subject
+                    </p>
                   </div>
                 ) : (
                   subjectPerformance.map((subject, index) => (
@@ -323,7 +329,8 @@ const Page = () => {
           <CardHeader className="flex flex-col gap-2 w-full">
             <div className="flex w-full justify-between items-center">
               <CardTitle className="text-lg flex items-center gap-2">
-                <CalendarDays className="w-5 h-5 text-sky-500" /> Focus Activity
+                {/* Menggunakan BarChart3 untuk grafik */}
+                <BarChart3 className="w-5 h-5 text-sky-500" /> Focus Activity
               </CardTitle>
               <Select value={range} onValueChange={setRange}>
                 <SelectTrigger className="w-[140px] cursor-pointer text-sm">
@@ -341,8 +348,12 @@ const Page = () => {
           <CardContent>
             <div className="h-[300px] w-full">
               {weeklyData.every((d) => d.minutes === 0) ? (
-                <div className="h-full flex items-center justify-center text-gray-400 text-sm">
-                  No activity recorded.
+                /* EMPTY STATE: FOCUS ACTIVITY */
+                <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
+                  <BarChart3 className="w-16 h-16 opacity-10" />
+                  <p className="text-sm font-medium">
+                    No activity recorded for this period
+                  </p>
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
