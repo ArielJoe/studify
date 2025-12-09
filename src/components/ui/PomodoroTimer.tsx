@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import NumberFlow from "@number-flow/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type TimerMode = "task" | "break";
 
@@ -32,6 +34,7 @@ export function PomodoroTimer({
     task: initialFocus,
     break: initialBreak,
   });
+  const router = useRouter();
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -125,6 +128,15 @@ export function PomodoroTimer({
   return (
     <div className="flex min-h-screen w-full items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 relative">
+        <div className="absolute top-0 left-0">
+          <button
+            onClick={() => router.back()}
+            className="p-2 rounded-full hover:bg-gray-100 transition"
+          >
+            <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
+          </button>
+        </div>
+
         {/* Mode Selector */}
         <div className="flex gap-3 justify-center">
           {(["task", "break"] as TimerMode[]).map((m) => (

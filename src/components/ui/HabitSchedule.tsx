@@ -289,10 +289,17 @@ const Page = () => {
       <header className="bg-white border-b px-6 py-8 mb-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
+            <button
+              onClick={() => router.back()}
+              className="p-2 rounded-full hover:bg-gray-100 transition"
+            >
+              <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
+            </button>
+
+            {/* Icon + Judul */}
             <Calendar className="w-8 h-8 text-sky-500" />
-            <h1 className="text-3xl font-bold text-gray-900">
-              Habit Scheduling
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900">Habit Scheduling</h1>
+
           </div>
         </div>
       </header>

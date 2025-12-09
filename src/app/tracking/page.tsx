@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { ArrowLeft } from "lucide-react";
 import {
   collection,
   query,
@@ -11,6 +12,7 @@ import {
   getDocs,
   Timestamp,
 } from "firebase/firestore";
+
 import {
   Loader2,
   TrendingUp,
@@ -18,7 +20,9 @@ import {
   Clock,
   CalendarDays,
 } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import {
   BarChart,
   Bar,
@@ -29,7 +33,17 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+
 import { Task } from "@/types/schedule";
+
+/* ---------------- SELECT COMPONENT IMPORT ---------------- */
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
@@ -38,6 +52,8 @@ const formatDate = (date: Date) => {
 const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+
+  const [range, setRange] = useState("7"); // default: last 7 days
 
   // State Data
   const [totalFocusMinutes, setTotalFocusMinutes] = useState(0);
@@ -50,6 +66,7 @@ const Page = () => {
     { name: string; tasks: number }[]
   >([]);
 
+  /* ----------------------------- FETCH -------------------------------- */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -82,7 +99,6 @@ const Page = () => {
           return {
             id: doc.id,
             ...data,
-            // Konversi Firestore Timestamp ke Date JS
             completedAt:
               data.completedAt instanceof Timestamp
                 ? data.completedAt.toDate()
@@ -94,7 +110,7 @@ const Page = () => {
           } as Task;
         });
 
-        // 3. Calculate Statistics
+        /* --------------------------- CALCULATIONS --------------------------- */
         const completedTasks = tasks.filter((t) => t.completed);
 
         // A. Total Metrics
@@ -110,15 +126,23 @@ const Page = () => {
             : 0
         );
 
-        // B. Weekly Data (Last 7 Days)
-        const last7Days = Array.from({ length: 7 }, (_, i) => {
+        /* ----------------------- WEEKLY DATA FILTER ------------------------ */
+
+        const selectedRange = parseInt(range); // 7 / 14 / 30 / 999 (all time)
+
+        const periodDays =
+          selectedRange === 999
+            ? 90 // default show 3 months if ALL TIME
+            : selectedRange;
+
+        const lastXdays = Array.from({ length: periodDays }, (_, i) => {
           const d = new Date();
-          d.setDate(d.getDate() - (6 - i));
+          d.setDate(d.getDate() - (periodDays - 1 - i));
           d.setHours(0, 0, 0, 0);
           return d;
         });
 
-        const weeklyChartData = last7Days.map((date) => {
+        const weeklyChartData = lastXdays.map((date) => {
           const dayMinutes = completedTasks
             .filter((t) => {
               if (!t.completedAt) return false;
@@ -131,14 +155,12 @@ const Page = () => {
             })
             .reduce((acc, t) => acc + t.pomodoroMinutes, 0);
 
-          return {
-            name: formatDate(date),
-            minutes: dayMinutes,
-          };
+          return { name: formatDate(date), minutes: dayMinutes };
         });
+
         setWeeklyData(weeklyChartData);
 
-        // C. Subject Performance
+        /* -------------------- SUBJECT PERFORMANCE -------------------- */
         const subjectStats: Record<string, number> = {};
         completedTasks.forEach((t) => {
           const subjectName = subjectsMap.get(t.subjectId) || "Unknown Subject";
@@ -147,8 +169,8 @@ const Page = () => {
 
         const subjectChartData = Object.entries(subjectStats)
           .map(([name, count]) => ({ name, tasks: count }))
-          .sort((a, b) => b.tasks - a.tasks) // Sort terbanyak
-          .slice(0, 5); // Ambil top 5
+          .sort((a, b) => b.tasks - a.tasks)
+          .slice(0, 5);
 
         setSubjectPerformance(subjectChartData);
       } catch (error) {
@@ -159,8 +181,9 @@ const Page = () => {
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [router, range]); // <-- filter akan trigger ulang fetch
 
+  /* ------------------------------- UI -------------------------------- */
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white">
@@ -174,28 +197,38 @@ const Page = () => {
       {/* Header */}
       <header className="bg-white border-b px-6 py-8 mb-8">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-2">
-            <TrendingUp className="w-8 h-8 text-sky-500" />
-            <h1 className="text-3xl font-bold text-gray-900">
-              Progress Tracking
-            </h1>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.back()}
+              className="p-2 rounded-full hover:bg-gray-100 transition">
+              <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
+            </button>
+
+            {/* Judul */}
+            <div className="flex items-center gap-3">
+              <TrendingUp className="w-8 h-8 text-sky-500" />
+              <h1 className="text-3xl font-bold text-gray-900">Progress Tracking</h1>
+            </div>
+
           </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 space-y-8">
-        {/* 1. Summary Cards */}
+        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Total Focus */}
           <Card className="border-sky-100 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm text-gray-500">
                 Total Focus Time
               </CardTitle>
               <Clock className="h-4 w-4 text-sky-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-900">
-                {Math.floor(totalFocusMinutes / 60)}h {totalFocusMinutes % 60}m
+                {Math.floor(totalFocusMinutes / 60)}h{" "}
+                {totalFocusMinutes % 60}m
               </div>
               <p className="text-xs text-gray-500 mt-1">
                 Accumulated focus minutes
@@ -203,9 +236,10 @@ const Page = () => {
             </CardContent>
           </Card>
 
+          {/* Completed Tasks */}
           <Card className="border-sky-100 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm text-gray-500">
                 Tasks Completed
               </CardTitle>
               <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -220,9 +254,10 @@ const Page = () => {
             </CardContent>
           </Card>
 
+          {/* Completion Rate */}
           <Card className="border-sky-100 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm text-gray-500">
                 Completion Rate
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-purple-500" />
@@ -238,54 +273,56 @@ const Page = () => {
           </Card>
         </div>
 
-        {/* 2. Charts Section */}
+        {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left: Weekly Activity */}
+          {/* Left Chart */}
           <Card className="shadow-sm border-gray-100">
-            <CardHeader>
+            <CardHeader className="flex flex-col gap-2 w-full">
+              <div className="flex w-full justify-between items-center">
               <CardTitle className="text-lg flex items-center gap-2">
                 <CalendarDays className="w-5 h-5 text-sky-500" />
-                Focus Activity (Last 7 Days)
+                Focus Activity
               </CardTitle>
+
+              {/* ---------------- FILTER DROPDOWN ---------------- */}
+              <Select value={range} onValueChange={setRange}>
+                <SelectTrigger className="w-[200px] cursor-pointer">
+                  <SelectValue placeholder="Select range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7" className="cursor-pointer">Last 7 days</SelectItem>
+                  <SelectItem value="14" className="cursor-pointer">Last 14 days</SelectItem>
+                  <SelectItem value="30" className="cursor-pointer">Last 30 days</SelectItem>
+                  <SelectItem value="999" className="cursor-pointer">All Time</SelectItem>
+                </SelectContent>
+              </Select>
+              </div>
             </CardHeader>
+
             <CardContent>
               <div className="h-[300px] w-full">
                 {weeklyData.every((d) => d.minutes === 0) ? (
                   <div className="h-full flex items-center justify-center text-gray-400 text-sm">
-                    No activity recorded this week yet.
+                    No activity recorded.
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={weeklyData}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        vertical={false}
-                        stroke="#f0f0f0"
-                      />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
                       <XAxis
                         dataKey="name"
-                        axisLine={false}
-                        tickLine={false}
                         tick={{ fill: "#6b7280", fontSize: 12 }}
-                        dy={10}
                       />
                       <YAxis
+                        tick={{ fill: "#6b7280", fontSize: 12 }}
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: "#6b7280", fontSize: 12 }}
                       />
-                      <Tooltip
-                        cursor={{ fill: "#f9fafb" }}
-                        contentStyle={{
-                          borderRadius: "8px",
-                          border: "none",
-                          boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                        }}
-                      />
+                      <Tooltip />
                       <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
-                        {weeklyData.map((entry, index) => (
+                        {weeklyData.map((entry, i) => (
                           <Cell
-                            key={`cell-${index}`}
+                            key={i}
                             fill={entry.minutes > 0 ? "#38bdf8" : "#e5e7eb"}
                           />
                         ))}
@@ -305,6 +342,7 @@ const Page = () => {
                 Top Subjects by Completed Tasks
               </CardTitle>
             </CardHeader>
+
             <CardContent>
               <div className="space-y-6">
                 {subjectPerformance.length === 0 ? (
@@ -322,7 +360,8 @@ const Page = () => {
                           {subject.tasks} tasks
                         </span>
                       </div>
-                      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+
+                      <div className="h-2 w-full bg-gray-100 rounded-full">
                         <div
                           className="h-full bg-gradient-to-r from-sky-400 to-blue-500 rounded-full"
                           style={{
