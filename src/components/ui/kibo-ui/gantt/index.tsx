@@ -110,7 +110,7 @@ export type GanttContextProps = {
 
 const getsDaysIn = (range: Range) => {
   // For when range is daily
-  let fn = (_date: Date) => 1;
+  let fn = (_: Date) => 1;
 
   if (range === "monthly" || range === "quarterly") {
     fn = getDaysInMonth;
@@ -646,8 +646,8 @@ export const GanttColumn: FC<GanttColumnProps> = ({
 
   const top = useThrottle(
     mousePosition.y -
-      (mouseRef.current?.getBoundingClientRect().y ?? 0) -
-      (windowScroll.y ?? 0),
+    (mouseRef.current?.getBoundingClientRect().y ?? 0) -
+    (windowScroll.y ?? 0),
     10
   );
 
@@ -713,8 +713,8 @@ export const GanttCreateMarkerTrigger: FC<GanttCreateMarkerTriggerProps> = ({
   const [windowScroll] = useWindowScroll();
   const x = useThrottle(
     mousePosition.x -
-      (mouseRef.current?.getBoundingClientRect().x ?? 0) -
-      (windowScroll.x ?? 0),
+    (mouseRef.current?.getBoundingClientRect().x ?? 0) -
+    (windowScroll.x ?? 0),
     10
   );
 
@@ -1180,6 +1180,12 @@ export const GanttProvider: FC<GanttProviderProps> = ({
   const [timelineData, setTimelineData] = useState<TimelineData>(
     createInitialTimelineData(new Date())
   );
+  const timelineDataRef = useRef(timelineData);
+
+  useEffect(() => {
+    timelineDataRef.current = timelineData;
+  }, [timelineData]);
+
   const [, setScrollX] = useGanttScrollX();
   const [sidebarWidth, setSidebarWidth] = useState(0);
 
@@ -1254,13 +1260,14 @@ export const GanttProvider: FC<GanttProviderProps> = ({
 
       if (scrollLeft === 0) {
         // Extend timelineData to the past
-        const firstYear = timelineData[0]?.year;
+        const currentData = timelineDataRef.current;
+        const firstYear = currentData[0]?.year;
 
         if (!firstYear) {
           return;
         }
 
-        const newTimelineData: TimelineData = [...timelineData];
+        const newTimelineData: TimelineData = [...currentData];
         newTimelineData.unshift({
           year: firstYear - 1,
           quarters: new Array(4).fill(null).map((_, quarterIndex) => ({
@@ -1280,13 +1287,14 @@ export const GanttProvider: FC<GanttProviderProps> = ({
         setScrollX(scrollElement.scrollLeft);
       } else if (scrollLeft + clientWidth >= scrollWidth) {
         // Extend timelineData to the future
-        const lastYear = timelineData.at(-1)?.year;
+        const currentData = timelineDataRef.current;
+        const lastYear = currentData.at(-1)?.year;
 
         if (!lastYear) {
           return;
         }
 
-        const newTimelineData: TimelineData = [...timelineData];
+        const newTimelineData: TimelineData = [...currentData];
         newTimelineData.push({
           year: lastYear + 1,
           quarters: new Array(4).fill(null).map((_, quarterIndex) => ({

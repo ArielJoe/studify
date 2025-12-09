@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Play, Pause, RotateCcw } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 
 export interface TimerState {
   isActive: boolean;
@@ -34,8 +33,8 @@ const PomodoroProgressBar = ({
   }, [timerState.timeRemaining]);
 
   useEffect(() => {
-  setDisplayTime(timerState.totalTime);
-}, [timerState.isBreak, timerState.totalTime]);
+    setDisplayTime(timerState.totalTime);
+  }, [timerState.isBreak, timerState.totalTime]);
 
   useEffect(() => {
     if (!timerState.isActive || timerState.isPaused) return;
