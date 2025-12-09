@@ -225,32 +225,10 @@ const Page = () => {
     setCompletableTaskId(null);
   };
 
+  // ===== TIMER HANDLER (With setTimeout fix) =====
   const handleTimerComplete = () => {
-    if (timerState.isBreak) {
-      setTimerState({
-        isActive: false,
-        isPaused: false,
-        isBreak: false,
-        timeRemaining: 0,
-        totalTime: 0,
-      });
-      toast({ title: "Break complete!", description: "Ready for next task." });
-    } else if (timerState.currentTaskId) {
-      setCompletableTaskId(timerState.currentTaskId);
-      const task = tasks.find((t) => t.id === timerState.currentTaskId);
-      if (task && task.breakMinutes > 0) {
-        setTimerState({
-          isActive: true,
-          isPaused: false,
-          isBreak: true,
-          timeRemaining: task.breakMinutes * 60,
-          totalTime: task.breakMinutes * 60,
-        });
-        toast({
-          title: "Pomodoro complete!",
-          description: `Time for a ${task.breakMinutes}-minute break.`,
-        });
-      } else {
+    setTimeout(() => {
+      if (timerState.isBreak) {
         setTimerState({
           isActive: false,
           isPaused: false,
@@ -258,9 +236,37 @@ const Page = () => {
           timeRemaining: 0,
           totalTime: 0,
         });
-        toast({ title: "Task complete!", description: "Great work!" });
+        toast({
+          title: "Break complete!",
+          description: "Ready for next task.",
+        });
+      } else if (timerState.currentTaskId) {
+        setCompletableTaskId(timerState.currentTaskId);
+        const task = tasks.find((t) => t.id === timerState.currentTaskId);
+        if (task && task.breakMinutes > 0) {
+          setTimerState({
+            isActive: true,
+            isPaused: false,
+            isBreak: true,
+            timeRemaining: task.breakMinutes * 60,
+            totalTime: task.breakMinutes * 60,
+          });
+          toast({
+            title: "Pomodoro complete!",
+            description: `Time for a ${task.breakMinutes}-minute break.`,
+          });
+        } else {
+          setTimerState({
+            isActive: false,
+            isPaused: false,
+            isBreak: false,
+            timeRemaining: 0,
+            totalTime: 0,
+          });
+          toast({ title: "Task complete!", description: "Great work!" });
+        }
       }
-    }
+    }, 0);
   };
 
   const togglePause = () =>
@@ -285,7 +291,7 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
-      {/* Header */}
+      {/* Header (Style Progress Tracking: White BG, Border Bottom, Left Aligned) */}
       <header className="bg-white border-b px-6 py-8 mb-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-2">

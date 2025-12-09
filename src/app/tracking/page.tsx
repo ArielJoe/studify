@@ -49,9 +49,20 @@ const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
 };
 
+// Helper untuk membandingkan tanggal tanpa jam
+const isSameDay = (d1: Date, d2: Date) => {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+};
+
 const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+
+  const [maxSubjectTaskCount, setMaxSubjectTaskCount] = useState(1);
 
   const [range, setRange] = useState("7"); // default: last 7 days
 
@@ -59,6 +70,7 @@ const Page = () => {
   const [totalFocusMinutes, setTotalFocusMinutes] = useState(0);
   const [completedTasksCount, setCompletedTasksCount] = useState(0);
   const [completionRate, setCompletionRate] = useState(0);
+
   const [weeklyData, setWeeklyData] = useState<
     { name: string; minutes: number }[]
   >([]);
@@ -163,15 +175,21 @@ const Page = () => {
         /* -------------------- SUBJECT PERFORMANCE -------------------- */
         const subjectStats: Record<string, number> = {};
         completedTasks.forEach((t) => {
-          const subjectName = subjectsMap.get(t.subjectId) || "Unknown Subject";
+          const subjectName = subjectsMap.get(t.subjectId) || "Uncategorized";
           subjectStats[subjectName] = (subjectStats[subjectName] || 0) + 1;
         });
 
+        // Ubah ke array dan sort dari terbanyak
         const subjectChartData = Object.entries(subjectStats)
           .map(([name, count]) => ({ name, tasks: count }))
           .sort((a, b) => b.tasks - a.tasks)
           .slice(0, 5);
 
+        // Cari nilai maksimum untuk kalkulasi lebar bar (agar proporsional)
+        const maxVal =
+          subjectChartData.length > 0 ? subjectChartData[0].tasks : 1;
+
+        setMaxSubjectTaskCount(maxVal);
         setSubjectPerformance(subjectChartData);
       } catch (error) {
         console.error("Error fetching tracking data:", error);
@@ -194,7 +212,6 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
-      {/* Header */}
       <header className="bg-white border-b px-6 py-8 mb-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3">
@@ -346,8 +363,9 @@ const Page = () => {
             <CardContent>
               <div className="space-y-6">
                 {subjectPerformance.length === 0 ? (
-                  <div className="h-[250px] flex items-center justify-center text-gray-400 text-sm">
-                    Complete tasks to see subject breakdown.
+                  <div className="h-[250px] flex flex-col items-center justify-center text-gray-400 text-sm gap-2">
+                    <CheckCircle2 className="w-8 h-8 opacity-20" />
+                    <p>No completed tasks yet.</p>
                   </div>
                 ) : (
                   subjectPerformance.map((subject, index) => (
@@ -356,17 +374,19 @@ const Page = () => {
                         <span className="font-medium text-gray-700">
                           {subject.name}
                         </span>
-                        <span className="text-gray-500">
-                          {subject.tasks} tasks
+                        <span className="text-gray-500 font-medium">
+                          {subject.tasks}{" "}
+                          {subject.tasks === 1 ? "task" : "tasks"}
                         </span>
                       </div>
 
                       <div className="h-2 w-full bg-gray-100 rounded-full">
                         <div
-                          className="h-full bg-gradient-to-r from-sky-400 to-blue-500 rounded-full"
+                          className="h-full bg-gradient-to-r from-sky-400 to-blue-500 rounded-full transition-all duration-500 ease-out"
                           style={{
+                            // PERBAIKAN: Gunakan maxSubjectTaskCount sebagai pembagi
                             width: `${
-                              (subject.tasks / completedTasksCount) * 100
+                              (subject.tasks / maxSubjectTaskCount) * 100
                             }%`,
                           }}
                         />
