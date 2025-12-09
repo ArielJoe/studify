@@ -255,7 +255,7 @@ const Page = () => {
                 </div>
               </DialogTrigger>
 
-              <DialogContent className="max-w-[90vw] md:max-w-sm p-0 border-none bg-transparent shadow-none">
+              <DialogContent className="max-w-[90vw] md:max-w-[500px] p-0 border-none bg-transparent shadow-none">
                 <VisuallyHidden>
                   <DialogHeader>
                     <DialogTitle>Streak Popup</DialogTitle>
@@ -265,39 +265,38 @@ const Page = () => {
                   </DialogHeader>
                 </VisuallyHidden>
 
-                <div className="relative bg-gradient-to-b from-white to-orange-50 rounded-2xl p-8 md:p-10 text-center shadow-xl overflow-hidden">
+                <div className="relative bg-gradient-to-b from-white to-orange-50 rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden flex items-center justify-between gap-4">
                   {/* Glow Background */}
                   <div className="absolute inset-0 -z-10">
                     <div className="absolute top-[-40px] right-[-40px] w-32 h-32 md:w-40 md:h-40 bg-orange-400/20 blur-3xl rounded-full"></div>
                     <div className="absolute bottom-[-40px] left-[-40px] w-32 h-32 md:w-40 md:h-40 bg-orange-300/20 blur-3xl rounded-full"></div>
                   </div>
 
-                  {/* Flame Icon */}
-                  <div className="relative mb-3">
-                    <div className="absolute inset-0 blur-xl bg-orange-500/40 rounded-full -z-10 scale-150"></div>
-                    <span className="text-orange-500 text-4xl md:text-5xl drop-shadow-md">
-                      🔥
-                    </span>
+                  {/* LEFT SIDE: TEXT */}
+                  <div className="text-left flex flex-col z-10">
+                    {/* Title */}
+                    <p className="text-gray-700 text-lg md:text-2xl font-bold tracking-wide">
+                      Kamu belajar
+                    </p>
+
+                    {/* Streak Number */}
+                    <h2 className="text-7xl md:text-[80px] font-black text-orange-500 leading-none drop-shadow-sm my-1 md:my-3">
+                      0
+                    </h2>
+
+                    {/* Subtitle */}
+                    <p className="text-gray-700 text-lg md:text-2xl font-bold">
+                      hari berturut-turut!
+                    </p>
                   </div>
 
-                  {/* Title */}
-                  <p className="text-gray-700 text-lg md:text-xl font-medium tracking-wide">
-                    Kamu belajar
-                  </p>
-
-                  {/* Streak Number */}
-                  <h2 className="text-8xl md:text-[110px] font-black text-orange-500 leading-none drop-shadow-sm my-2 md:my-0">
-                    0
-                  </h2>
-
-                  {/* Subtitle */}
-                  <p className="text-gray-600 text-lg md:text-xl font-medium mb-6 md:mb-8">
-                    hari berturut-turut!
-                  </p>
-
-                  {/* Watermark */}
-                  <div className="mt-2 md:mt-4 text-sky-500 font-semibold text-xs md:text-sm opacity-80 tracking-wide">
-                    © Studify
+                  {/* RIGHT SIDE: FLAME ICON */}
+                  <div className="relative shrink-0 z-10 mr-2 md:mr-6">
+                    <div className="absolute inset-0 blur-2xl bg-orange-500/30 rounded-full -z-10 scale-150"></div>
+                    {/* Perbesar ukuran emoji agar seimbang dengan teks */}
+                    <span className="text-orange-500 text-[80px] md:text-[140px] drop-shadow-md leading-none">
+                      🔥
+                    </span>
                   </div>
                 </div>
               </DialogContent>
