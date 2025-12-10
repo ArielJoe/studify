@@ -26,8 +26,29 @@ export const StreakCard = () => {
         const unsubDoc = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
-            // Ambil data streak, default 0 jika belum ada
-            setStreak(data.streak?.currentStreak || 0);
+            const serverStreak = data.streak?.currentStreak || 0;
+            const lastActiveDate = data.streak?.lastActiveDate;
+
+            // Visual reset (DB updates on next task)
+            let displayedStreak = serverStreak;
+
+            if (lastActiveDate) {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              const last = new Date(lastActiveDate);
+              last.setHours(0, 0, 0, 0);
+
+              const diffTime = today.getTime() - last.getTime();
+              const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+              // Reset if > 1 day gap
+              if (diffDays > 1) {
+                displayedStreak = 0;
+              }
+            }
+
+            setStreak(displayedStreak);
           }
           setLoading(false);
         });

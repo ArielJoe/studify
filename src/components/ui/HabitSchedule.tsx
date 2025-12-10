@@ -5,6 +5,7 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Plus, ArrowLeft, Timer, Calendar, Loader2 } from "lucide-react";
 import SubjectCard from "@/components/ui/SubjectCard";
 import TaskList from "@/components/ui/TaskList";
@@ -385,25 +386,26 @@ const Page = () => {
               </div>
 
               {subjects.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-12 border border-border shadow-medium">
-                    <Timer className="h-16 w-16 mx-auto mb-4 text-primary opacity-50" />
-                    <h3 className="text-xl font-semibold mb-2">
-                      No subjects yet
-                    </h3>
-                    <p className="text-muted-foreground mb-6">
-                      Create your first subject to start tracking your study
-                      sessions
-                    </p>
+                <Card className="border-sky-100 shadow-sm bg-white">
+                  <CardContent className="flex flex-col items-center justify-center min-h-[300px] py-12 text-center text-gray-400 gap-4">
+                    <Timer className="w-16 h-16 opacity-10" />
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-medium text-gray-900">
+                        No subjects yet
+                      </h3>
+                      <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                        Create your first subject to start tracking your study
+                        sessions
+                      </p>
+                    </div>
                     <Button
                       onClick={() => setShowSubjectDialog(true)}
-                      size="lg"
-                      className="bg-sky-400 hover:bg-sky-500 text-white transition-colors"
+                      className="bg-sky-400 hover:bg-sky-500 text-white transition-colors mt-2"
                     >
-                      <Plus className="mr-2 h-5 w-5" /> Create First Subject
+                      <Plus className="mr-2 h-4 w-4" /> Create First Subject
                     </Button>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2">
                   {subjects.map((subject: Subject) => (
