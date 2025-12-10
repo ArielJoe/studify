@@ -83,6 +83,14 @@ const Page = () => {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           {/* Logo Kiri */}
           <div className="flex items-center gap-2">
+            <div className="relative w-12 h-12 md:w-14 md:h-14">
+              <Image
+                src="/logo.png"
+                alt="Studify Logo"
+                fill
+                className="object-contain scale-125"
+              />
+            </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
               Studify
             </h1>
