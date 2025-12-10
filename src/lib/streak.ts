@@ -1,7 +1,7 @@
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
-// Helper sederhana untuk mendapatkan format YYYY-MM-DD dari waktu lokal user
+// Date formatter
 const getLocalDateString = (date: Date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -17,30 +17,30 @@ export const updateUserStreak = async (userId: string) => {
     if (!userSnap.exists()) return;
 
     const userData = userSnap.data();
-    // Ambil data streak yang ada, atau inisialisasi default jika belum ada
+    // Get streak or default
     const streakData = userData.streak || {
       currentStreak: 0,
       longestStreak: 0,
       lastActiveDate: null,
     };
 
-    // Gunakan tanggal hari ini (Lokal)
+    // Use local date
     const today = new Date();
     const todayStr = getLocalDateString(today);
     const lastActiveStr = streakData.lastActiveDate;
 
-    // SKENARIO 1: Jika hari ini SUDAH mengerjakan task (tanggal sama), tidak perlu update streak
+    // Scenario 1: Already active today
     if (lastActiveStr === todayStr) {
       console.log("Streak already updated for today.");
       return;
     }
 
-    let newCurrentStreak = 1; // Default reset ke 1
+    let newCurrentStreak = 1; // Reset to 1
     let newLongestStreak = streakData.longestStreak || 0;
 
     if (lastActiveStr) {
-      // Hitung selisih hari
-      // Kita set jam ke 00:00:00 agar perbandingan murni berdasarkan tanggal kalender
+      // Calculate diff
+      // Set to midnight
       const lastDate = new Date(lastActiveStr);
       lastDate.setHours(0, 0, 0, 0);
 
@@ -51,23 +51,23 @@ export const updateUserStreak = async (userId: string) => {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       if (diffDays === 1) {
-        // SKENARIO 2: Kemarin mengerjakan (selisih 1 hari) -> Streak Nambah
+        // Scenario 2: Active yesterday
         newCurrentStreak = (streakData.currentStreak || 0) + 1;
       } else {
-        // SKENARIO 3: Bolong lebih dari 1 hari -> Reset jadi 1
+        // Scenario 3: Missed a day
         newCurrentStreak = 1;
       }
     } else {
-      // SKENARIO 4: Belum pernah ada data (User Baru) -> Streak 1
+      // Scenario 4: New user
       newCurrentStreak = 1;
     }
 
-    // Cek apakah memecahkan rekor tertinggi
+    // Check for high score
     if (newCurrentStreak > newLongestStreak) {
       newLongestStreak = newCurrentStreak;
     }
 
-    // Simpan ke Firestore
+    // Save to Firestore
     await updateDoc(userRef, {
       streak: {
         currentStreak: newCurrentStreak,

@@ -54,7 +54,7 @@ const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
-  // States
+  // Component State
   const [maxSubjectTaskCount, setMaxSubjectTaskCount] = useState(1);
   const [range, setRange] = useState("7");
   const [totalFocusMinutes, setTotalFocusMinutes] = useState(0);
@@ -207,7 +207,7 @@ const Page = () => {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 space-y-8">
-        {/* 1. Summary Cards */}
+        {/* Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="border-sky-100 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -261,9 +261,9 @@ const Page = () => {
           </Card>
         </div>
 
-        {/* 2. Grid Middle (Streak Calendar Kiri - Top Subjects Kanan) */}
+        {/* Middle Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* KIRI: Streak Calendar */}
+          {/* Streak Calendar */}
           <Card className="shadow-sm border-gray-100">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -276,18 +276,18 @@ const Page = () => {
             </CardContent>
           </Card>
 
-          {/* KANAN: Top Subjects */}
+          {/* Top Subjects */}
           <Card className="shadow-sm border-gray-100 flex flex-col">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                {/* Menggunakan Layers agar lebih cocok untuk "Subject" */}
+                {/* Layers Icon */}
                 <Layers className="w-5 h-5 text-sky-500" /> Top Subjects
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1">
               <div className="space-y-6 h-full">
                 {subjectPerformance.length === 0 ? (
-                  /* EMPTY STATE: TOP SUBJECTS */
+                  /* Empty Top Subjects */
                   <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-gray-400 gap-3">
                     <Layers className="w-12 h-12 opacity-20" />
                     <p className="text-sm font-medium">
@@ -310,9 +310,8 @@ const Page = () => {
                         <div
                           className="h-full bg-gradient-to-r from-sky-400 to-blue-500 rounded-full transition-all duration-500 ease-out"
                           style={{
-                            width: `${
-                              (subject.tasks / maxSubjectTaskCount) * 100
-                            }%`,
+                            width: `${(subject.tasks / maxSubjectTaskCount) * 100
+                              }%`,
                           }}
                         />
                       </div>
@@ -324,12 +323,12 @@ const Page = () => {
           </Card>
         </div>
 
-        {/* 3. Bottom Full Width: Focus Activity Chart */}
+        {/* Focus Activity */}
         <Card className="shadow-sm border-gray-100 lg:col-span-2">
           <CardHeader className="flex flex-col gap-2 w-full">
             <div className="flex w-full justify-between items-center">
               <CardTitle className="text-lg flex items-center gap-2">
-                {/* Menggunakan BarChart3 untuk grafik */}
+                {/* BarChart Icon */}
                 <BarChart3 className="w-5 h-5 text-sky-500" /> Focus Activity
               </CardTitle>
               <Select value={range} onValueChange={setRange}>
@@ -348,7 +347,7 @@ const Page = () => {
           <CardContent>
             <div className="h-[300px] w-full">
               {weeklyData.every((d) => d.minutes === 0) ? (
-                /* EMPTY STATE: FOCUS ACTIVITY */
+                /* Empty Activity */
                 <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
                   <BarChart3 className="w-16 h-16 opacity-10" />
                   <p className="text-sm font-medium">

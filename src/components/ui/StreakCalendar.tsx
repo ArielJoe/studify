@@ -39,9 +39,9 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
   const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
   return (
-    // PERUBAHAN 1: Hapus 'max-w-sm mx-auto'. Gunakan 'w-full' agar memenuhi container induk.
+    // Use full width
     <div className="w-full h-full flex flex-col">
-      {/* Header Kalender */}
+      {/* Header */}
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="text-base sm:text-lg font-bold text-gray-800">
           {format(currentDate, "MMMM yyyy")}
@@ -66,10 +66,10 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
         </div>
       </div>
 
-      {/* Nama Hari */}
+      {/* Days */}
       <div className="grid grid-cols-7 mb-2 text-center">
         {weekDays.map((day) => (
-          // PERUBAHAN 2: Sedikit perbesar font hari pada layar yang lebih besar
+          // Responsive font size
           <div
             key={day}
             className="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase py-1"
@@ -79,8 +79,8 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
         ))}
       </div>
 
-      {/* Grid Tanggal */}
-      {/* PERUBAHAN 3: Gunakan gap responsif (gap-1 di HP, gap-2 di tablet/desktop) agar lebih rapi saat melebar */}
+      {/* Date Grid */}
+      {/* Responsive gap */}
       <div className="grid grid-cols-7 gap-1 sm:gap-2 flex-grow">
         {calendarDays.map((date, idx) => {
           const isActive = activeDates.some((activeDate) =>
@@ -93,18 +93,16 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
           return (
             <div
               key={idx}
-              // PERUBAHAN 4: 'aspect-square' menjaga bentuk tetap kotak sempurna saat melebar.
-              // Ditambahkan 'sm:rounded-lg' agar sudut lebih tumpul saat kotak membesar.
+              // Maintain aspect ratio
+              // Rounded corners
               className={`
                 aspect-square flex items-center justify-center 
                 rounded-md sm:rounded-lg text-sm sm:text-base font-medium transition-all duration-200 cursor-default
-                ${
-                  !isCurrentMonth ? "text-gray-300 opacity-40" : "text-gray-700"
+                ${!isCurrentMonth ? "text-gray-300 opacity-40" : "text-gray-700"
                 }
-                ${
-                  isActive
-                    ? "bg-orange-500 text-white shadow-sm border border-orange-600"
-                    : isTodayDate
+                ${isActive
+                  ? "bg-orange-500 text-white shadow-sm border border-orange-600"
+                  : isTodayDate
                     ? "border-2 border-sky-500 text-sky-600 font-bold"
                     : "hover:bg-gray-100"
                 }

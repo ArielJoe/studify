@@ -31,7 +31,7 @@ export interface TimerState {
 const Page = () => {
   const router = useRouter();
 
-  // --- 1. Ref untuk mencegah Double Notification ---
+  // Prevent double notification
   const isProcessingRef = useRef(false);
 
   const {
@@ -81,7 +81,7 @@ const Page = () => {
     return () => unsubscribe();
   }, [router]);
 
-  // Request Izin Notifikasi saat halaman dimuat
+  // Request notification permission
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
       if (Notification.permission !== "granted") {
@@ -90,13 +90,13 @@ const Page = () => {
     }
   }, []);
 
-  // --- Helper: Play Sound & Show Notification ---
+  // Play sound & notify
   const playAlert = (title: string, body: string) => {
-    // Mainkan Audio (Pastikan file alarm.mp3 ada di folder public)
+    // Play audio
     const audio = new Audio("/alarm.mp3");
     audio.play().catch((err) => console.log("Audio play blocked:", err));
 
-    // Tampilkan Notifikasi Browser
+    // Browser notification
     if (Notification.permission === "granted") {
       new Notification(title, {
         body: body,
@@ -106,7 +106,7 @@ const Page = () => {
     }
   };
 
-  // ===== SUBJECT HANDLERS =====
+  // Subject Handlers
   const handleCreateSubject = async (
     title: string,
     description: string,
@@ -176,11 +176,11 @@ const Page = () => {
         setSelectedSubject((prev) =>
           prev
             ? {
-                ...prev,
-                title: payload.title,
-                description: payload.description,
-                scheduledDate: payload.scheduledDate ?? null,
-              }
+              ...prev,
+              title: payload.title,
+              description: payload.description,
+              scheduledDate: payload.scheduledDate ?? null,
+            }
             : prev
         );
       }
@@ -193,7 +193,7 @@ const Page = () => {
     }
   };
 
-  // ===== TASK HANDLERS =====
+  // Task Handlers
   const handleCreateTask = async (
     title: string,
     pomodoroMinutes: number,
@@ -254,18 +254,18 @@ const Page = () => {
     setCompletableTaskId(null);
   };
 
-  // ===== 2. PERBAIKAN LOGIKA TIMER SELESAI =====
+  // Timer logic
   const handleTimerComplete = () => {
-    // Cek apakah sedang memproses? Jika ya, berhenti.
+    // Check processing
     if (isProcessingRef.current) return;
 
-    // Kunci pintu agar tidak ada eksekusi ganda
+    // Prevent double execution
     isProcessingRef.current = true;
 
-    // Gunakan setTimeout untuk menghindari konflik Render React
+    // Avoid render conflict
     setTimeout(() => {
       if (timerState.isBreak) {
-        // --- Break Selesai ---
+        // Break finished
         playAlert("Break Finished!", "Time to get back to work! 💪");
 
         setTimerState({
@@ -276,7 +276,7 @@ const Page = () => {
           totalTime: 0,
         });
       } else if (timerState.currentTaskId) {
-        // --- Fokus Selesai ---
+        // Focus finished
         setCompletableTaskId(timerState.currentTaskId);
         const task = tasks.find((t) => t.id === timerState.currentTaskId);
 
@@ -307,7 +307,7 @@ const Page = () => {
         }
       }
 
-      // Buka kunci pintu setelah 1 detik
+      // Unlock after 1s
       setTimeout(() => {
         isProcessingRef.current = false;
       }, 1000);
@@ -336,7 +336,7 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header Responsive */}
+      {/* Header */}
       <header className="bg-white border-b sticky top-0 z-10 transition-all duration-200 px-4 py-4 md:px-6 md:py-8 mb-6 md:mb-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-4">
@@ -358,7 +358,7 @@ const Page = () => {
         </div>
       </header>
 
-      {/* Main Content Area */}
+      {/* Content */}
       <div className="max-w-6xl mx-auto px-4 space-y-6">
         {/* Timer */}
         {timerState.isActive && (
@@ -372,7 +372,7 @@ const Page = () => {
 
         {!selectedSubject ? (
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* Subjects List */}
+            {/* Subjects */}
             <div className="flex-1 space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold">Your Subjects</h2>
@@ -419,7 +419,7 @@ const Page = () => {
               )}
             </div>
 
-            {/* Schedule Calendar */}
+            {/* Calendar */}
             <div className="lg:w-96 w-full flex justify-center h-fit">
               <ScheduleCalendar
                 subjects={subjects}

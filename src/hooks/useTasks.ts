@@ -14,7 +14,7 @@ import {
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { Task } from "@/types/schedule";
-// Pastikan path ini sesuai dengan lokasi file helper streak Anda
+// Ensure path is correct
 import { updateUserStreak } from "@/lib/streak";
 
 export const useTasks = (subjectId: string | null) => {
@@ -22,7 +22,7 @@ export const useTasks = (subjectId: string | null) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Gunakan onAuthStateChanged untuk memastikan user sudah terload
+    // Check auth
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (!user) {
         setTasks([]);
@@ -30,15 +30,15 @@ export const useTasks = (subjectId: string | null) => {
         return;
       }
 
-      // 1. Base Query: Selalu filter berdasarkan User ID (Keamanan)
+      // 1. Base Query
       let q = query(collection(db, "tasks"), where("userId", "==", user.uid));
 
-      // 2. Jika ada subjectId, tambahkan filter subject
+      // 2. Add filter
       if (subjectId) {
         q = query(q, where("subjectId", "==", subjectId));
       }
 
-      // 3. Listener Real-time (Satu listener untuk semua kondisi)
+      // 3. Real-time Listener
       const unsubscribeSnapshot = onSnapshot(
         q,
         (snapshot) => {
@@ -52,7 +52,7 @@ export const useTasks = (subjectId: string | null) => {
               pomodoroMinutes: d.pomodoroMinutes,
               breakMinutes: d.breakMinutes,
               completed: d.completed,
-              // Handle Timestamp Firestore ke Date JS dengan aman
+              // Handle Timestamp
               completedAt:
                 d.completedAt instanceof Timestamp
                   ? d.completedAt.toDate()
@@ -64,8 +64,8 @@ export const useTasks = (subjectId: string | null) => {
             } as Task;
           });
 
-          // 4. Sorting Client-side (Terbaru di atas)
-          // Kita sort di sini untuk menghindari error "Index Required" di Firestore
+          // 4. Client-side Sorting
+          // Sort to avoid index error
           loadedTasks.sort(
             (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
           );
@@ -85,7 +85,7 @@ export const useTasks = (subjectId: string | null) => {
     return () => unsubscribeAuth();
   }, [subjectId]);
 
-  // --- CRUD OPERATIONS ---
+  // CRUD
 
   const createTask = async (
     subjectId: string,
@@ -122,15 +122,15 @@ export const useTasks = (subjectId: string | null) => {
 
     const newCompleted = !currentCompleted;
 
-    // 1. Update Task di Firestore
+    // 1. Update Task
     await updateDoc(doc(db, "tasks", taskId), {
       completed: newCompleted,
-      // Penting: Simpan waktu server saat selesai, atau null saat batal
+      // Save completion time
       completedAt: newCompleted ? serverTimestamp() : null,
     });
 
-    // 2. 🔥 INTEGRASI STREAK 🔥
-    // Jika task ditandai SELESAI, update streak user
+    // 2. Streak Integration
+    // Update streak on completion
     if (newCompleted) {
       try {
         await updateUserStreak(currentUser.uid);

@@ -73,7 +73,7 @@ export default function PomodoroPage() {
         initialFocus={pomodoroConfig.focusDuration}
         initialBreak={pomodoroConfig.breakDuration}
         onSaveSettings={saveConfig}
-        // 👇 INI KUNCINYA: Mengaktifkan auto-start untuk break
+        // Enable auto-start break
         autoStartBreak={true}
       />
     </div>

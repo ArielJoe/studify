@@ -3,7 +3,7 @@ import LoginForm from "@/components/ui/login-form";
 const Page = () => {
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Hero Section */}
+      {/* Hero Section */}
       <div
         className="hidden lg:flex lg:flex-1 relative overflow-hidden"
         style={{
@@ -23,7 +23,7 @@ const Page = () => {
         </div>
       </div>
 
-      {/* Right side - Login Form */}
+      {/* Login Form */}
       <div className="flex-1 lg:flex-none lg:w-1/2 flex flex-col justify-center px-6 lg:px-12 bg-background">
         <div className="w-full max-w-md mx-auto">
           <LoginForm />

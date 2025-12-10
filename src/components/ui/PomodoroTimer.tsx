@@ -140,7 +140,7 @@ export function PomodoroTimer({
           </button>
         </div>
 
-        {/* Mode Selector */}
+        {/* Mode Selection */}
         <div className="flex gap-3 justify-center">
           {(["task", "break"] as TimerMode[]).map((m) => (
             <button
@@ -159,7 +159,7 @@ export function PomodoroTimer({
           ))}
         </div>
 
-        {/* Settings Button */}
+        {/* Settings Btn */}
         <div className="absolute top-0 right-0">
           <Button
             onClick={() => setShowSettings(!showSettings)}
@@ -304,7 +304,7 @@ export function PomodoroTimer({
 
         {/* Controls */}
         <div className="flex justify-center gap-4">
-          {/* Play / Pause Button */}
+          {/* Play/Pause */}
           <motion.button
             onClick={toggleTimer}
             whileTap={{ scale: 0.9 }}
@@ -339,7 +339,7 @@ export function PomodoroTimer({
             </AnimatePresence>
           </motion.button>
 
-          {/* Reset Button */}
+          {/* Reset */}
           <motion.button
             onClick={resetTimer}
             whileTap={{ scale: 0.9 }}

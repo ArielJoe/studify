@@ -28,19 +28,19 @@ const ScheduleCalendar = ({
     new Set()
   );
 
-  // Get all scheduled dates from subjects
+  // Get scheduled dates
   const scheduledDates = subjects
     .filter((s) => s.scheduledDate)
     .map((s) => s.scheduledDate as Date);
 
-  // Check if a date has scheduled subjects
+  // Check dates
   const hasScheduledSubject = (date: Date) => {
     return scheduledDates.some(
       (scheduledDate) => scheduledDate.toDateString() === date.toDateString()
     );
   };
 
-  // Get subjects for a specific date
+  // Get date subjects
   const getSubjectsForDate = (date: Date) => {
     return subjects.filter(
       (s) =>
@@ -49,7 +49,7 @@ const ScheduleCalendar = ({
     );
   };
 
-  // Get tasks for a specific subject
+  // Get subject tasks
   const getTasksForSubject = (subjectId: string) => {
     console.log("Getting tasks for subjectId:", tasks, subjectId);
     return tasks.filter((t) => t.subjectId === subjectId);

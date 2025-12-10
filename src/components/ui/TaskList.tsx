@@ -17,7 +17,7 @@ interface TaskListProps {
   onToggleTask: (taskId: string) => void;
   onEditTask: (taskId: string) => void;
   onDeleteTask: (taskId: string) => void;
-  /** Hanya task dengan ID ini yang boleh di-check (setelah pomodoro selesai) */
+  /** Allow only this task (after pomodoro) */
   completableTaskId?: string | null;
 }
 
@@ -51,21 +51,21 @@ const TaskList = ({
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between p-3 rounded-lg border border-sky-100 hover:bg-sky-50/50 transition-colors">
                   <div className="flex items-center gap-3 flex-1">
-                    {/* Checkbox: blokir klik tanpa disabled agar tidak muncul ikon silang */}
+                    {/* Block click without disabled */}
                     <Checkbox
                       checked={task.completed}
                       onCheckedChange={() => {
                         if (!isBlocked) onToggleTask(task.id);
                       }}
                       onClick={(e) => {
-                        if (isBlocked) e.preventDefault(); // cegah klik mouse
+                        if (isBlocked) e.preventDefault(); // Prevent click
                       }}
                       onKeyDown={(e) => {
                         if (isBlocked && (e.key === " " || e.key === "Enter")) {
-                          e.preventDefault(); // cegah toggle via keyboard
+                          e.preventDefault(); // Prevent keyboard toggle
                         }
                       }}
-                      tabIndex={isBlocked ? -1 : 0} // jangan bisa fokus saat terkunci
+                      tabIndex={isBlocked ? -1 : 0} // Disable focus when blocked
                       aria-disabled={isBlocked}
                       className={`${isBlocked ? "opacity-50 cursor-default" : "hover:border-sky-400"}`}
                     />
@@ -114,7 +114,7 @@ const TaskList = ({
                       </Button>
                     )}
 
-                    {/* Dropdown Tiga Titik */}
+                    {/* Dropdown */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="hover:bg-sky-100">
