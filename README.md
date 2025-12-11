@@ -6,7 +6,7 @@ Fitur utama Studify meliputi:
 - ⏱️ Timer Pomodoro
 - 📝 Habit Scheduling untuk membuat jadwal belajar
 - 📅 Jadwal belajar berbasis kalender
-- 📊 Statistik dasar: jumlah sesi Pomodoro dan progres habit
+- 📊 Progress Tracking: jumlah sesi Pomodoro dan Streak Calendar
 
 Aplikasi ini dikembangkan sebagai proyek untuk mata kuliah Pemrograman Terapan yang mengintegrasikan konsep pengembangan web, manajemen waktu, dan desain antarmuka yang user-friendly.
 

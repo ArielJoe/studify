@@ -102,6 +102,8 @@
 #### Ariel Jonathan Wihardja (2372015)
 - ✅ **Fitur Progress Tracking**:  
   - Integrasi Streak Card dan Streak Calendar dengan Firestore
+- ✅ **Fitur Notifications Guard**:
+  - Memberitahu user untuk mengaktifkan permission Notifications pada web agar fitur berjalan dengan benar
 
 #### Eben Praus Yosia (2372023)
 - ✅ **Fitur Progress Tracking**:
