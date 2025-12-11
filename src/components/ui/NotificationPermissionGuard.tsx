@@ -101,7 +101,7 @@ export const NotificationPermissionGuard = () => {
                             variant="outline"
                             className="w-full h-11 rounded-xl text-sky-600 border-sky-200 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300 transition-all font-semibold cursor-pointer focus:ring-0 focus:ring-offset-0 focus-visible:ring-0"
                         >
-                            I've enabled them, Refresh Page
+                            I&apos;ve enabled them, Refresh Page
                         </Button>
                     ) : (
                         <Button
