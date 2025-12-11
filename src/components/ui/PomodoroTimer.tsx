@@ -11,6 +11,7 @@ import NumberFlow from "@number-flow/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { NotificationPermissionGuard } from "./NotificationPermissionGuard";
 
 type TimerMode = "task" | "break";
 
@@ -130,6 +131,7 @@ export function PomodoroTimer({
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center p-4">
+      <NotificationPermissionGuard />
       <div className="w-full max-w-md space-y-8 relative">
         <div className="absolute top-0 left-0">
           <button

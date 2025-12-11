@@ -19,6 +19,7 @@ import { useTask } from "@/hooks/useTask";
 import { toast } from "@/hooks/use-toast";
 import type { Subject, Task } from "@/types/schedule";
 import ScheduleCalendar from "./ScheduleCalender";
+import { NotificationPermissionGuard } from "./NotificationPermissionGuard";
 
 export interface TimerState {
   isActive: boolean;
@@ -337,6 +338,7 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <NotificationPermissionGuard />
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-10 transition-all duration-200 px-4 py-4 mb-6 md:mb-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between h-12 md:h-14">
