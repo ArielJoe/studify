@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Calendar, Timer, TrendingUp, Loader2, LogOut } from "lucide-react";
+import { Calendar, Timer, TrendingUp, Loader2, LogOut, Menu } from "lucide-react";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import {
@@ -97,12 +97,11 @@ const Page = () => {
             </h1>
           </div>
 
-
-          {/* Profil Kanan (Nama & Gambar) */}
-          <div className="flex items-center gap-4">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-4">
             <ModeToggle />
 
-            <div className="hidden md:block text-right">
+            <div className="text-right">
               <p className="text-sm font-semibold text-foreground">
                 {user.displayName || "User"}
               </p>
@@ -113,7 +112,7 @@ const Page = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-10 w-10 rounded-full p-0 overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-all"
+                  className="relative h-10 w-10 rounded-full p-0 overflow-hidden border border-border shadow-sm hover:shadow-md transition-all"
                 >
                   {user.photoURL ? (
                     <Image
@@ -144,11 +143,60 @@ const Page = () => {
 
             <StreakCard />
           </div>
+
+          {/* Mobile Hamburger Menu */}
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6 text-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64 p-4 space-y-4 shadow-xl border-border bg-card">
+                <div className="flex flex-col items-center gap-2 border-b border-border pb-4">
+                  <div className="relative h-16 w-16 rounded-full overflow-hidden border-2 border-border">
+                    {user.photoURL ? (
+                      <Image
+                        src={user.photoURL}
+                        alt="Profile"
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-sky-100 flex items-center justify-center text-sky-600 font-bold text-2xl">
+                        {user.displayName?.charAt(0).toUpperCase() || "U"}
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <p className="font-semibold text-foreground">{user.displayName || "User"}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center gap-2">
+                  <div className="flex items-center gap-2 p-2 rounded-lg">
+                    <ModeToggle />
+                  </div>
+                  <StreakCard />
+                </div>
+
+                <Button
+                  variant="destructive"
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Log out
+                </Button>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
       {/* --- MAIN CONTENT --- */}
-      <main className="py-12 px-4">
+      <main className="py-6 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-6">
             {features.map((feature, index) => {
