@@ -104,6 +104,7 @@
   - Integrasi Streak Card dan Streak Calendar dengan Firestore
 - ✅ **Fitur Notifications Guard**:
   - Memberitahu user untuk mengaktifkan permission Notifications pada web agar fitur berjalan dengan benar
+- ✅ **Fitur Dark Mode**
 
 #### Eben Praus Yosia (2372023)
 - ✅ **Fitur Progress Tracking**:
