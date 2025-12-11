@@ -33,7 +33,7 @@ const SubjectCard = ({ subject, onSelect, onEdit, onDelete }: SubjectCardProps) 
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
                 <CardTitle className="text-xl group-hover:text-sky-500 transition-colors">
                   {subject.title}
                 </CardTitle>
@@ -41,7 +41,7 @@ const SubjectCard = ({ subject, onSelect, onEdit, onDelete }: SubjectCardProps) 
                 {subject.scheduledDate && (
                   <Badge
                     variant="outline"
-                    className="gap-1 border-sky-300 bg-sky-50 text-sky-600"
+                    className="gap-1 border-sky-300 bg-sky-50 text-sky-600 shrink-0"
                   >
                     <CalendarIcon className="h-3 w-3" />
                     {format(

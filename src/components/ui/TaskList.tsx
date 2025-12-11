@@ -63,7 +63,7 @@ const TaskList = ({
               className="bg-gradient-card backdrop-blur-sm border border-sky-100 shadow-soft hover:shadow-medium transition-all"
             >
               <CardContent className="pt-6">
-                <div className="flex items-center justify-between p-3 rounded-lg border border-sky-100 hover:bg-sky-50/50 transition-colors">
+                <div className="flex flex-wrap items-center justify-between p-3 rounded-lg border border-sky-100 hover:bg-sky-50/50 transition-colors gap-y-2">
                   <div className="flex items-center gap-3 flex-1">
                     {/* Block click without disabled */}
                     <Checkbox
@@ -81,11 +81,10 @@ const TaskList = ({
                       }}
                       tabIndex={isBlocked ? -1 : 0} // Disable focus when blocked
                       aria-disabled={isBlocked}
-                      className={`${
-                        isBlocked
+                      className={`${isBlocked
                           ? "opacity-50 cursor-default"
                           : "hover:border-sky-400"
-                      }`}
+                        }`}
                     />
 
                     <div className="flex items-center gap-3 flex-1 min-w-0">

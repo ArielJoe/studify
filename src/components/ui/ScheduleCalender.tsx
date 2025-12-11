@@ -71,7 +71,7 @@ const ScheduleCalendar = ({
   };
 
   return (
-    <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-4 border border-border shadow-medium">
+    <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-3 md:p-4 border border-border shadow-medium">
       <h3 className="text-lg font-semibold mb-3">Study Schedule</h3>
       <Calendar
         mode="single"

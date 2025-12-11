@@ -283,7 +283,7 @@ export function PomodoroTimer({
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-7xl font-bold tracking-tight">
+            <div className="text-5xl md:text-7xl font-bold tracking-tight">
               <NumberFlow
                 value={Math.floor(timeLeft / 60)}
                 format={{ minimumIntegerDigits: 2 }}

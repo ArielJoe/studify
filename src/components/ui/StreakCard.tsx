@@ -97,7 +97,7 @@ export const StreakCard = () => {
             <p className="text-gray-700 text-lg md:text-2xl font-bold tracking-wide">
               Kamu belajar
             </p>
-            <h2 className="text-7xl md:text-[80px] font-black text-orange-500 leading-none drop-shadow-sm my-1 md:my-3">
+            <h2 className="text-5xl md:text-[80px] font-black text-orange-500 leading-none drop-shadow-sm my-1 md:my-3">
               {streak}
             </h2>
             <p className="text-gray-700 text-lg md:text-2xl font-bold">
@@ -108,7 +108,7 @@ export const StreakCard = () => {
           {/* RIGHT SIDE: FLAME ICON */}
           <div className="relative shrink-0 z-10 mr-2 md:mr-6">
             <div className="absolute inset-0 blur-2xl bg-orange-500/30 rounded-full -z-10 scale-150"></div>
-            <span className="text-orange-500 text-[80px] md:text-[140px] drop-shadow-md leading-none animate-pulse">
+            <span className="text-orange-500 text-[60px] md:text-[140px] drop-shadow-md leading-none animate-pulse">
               🔥
             </span>
           </div>
