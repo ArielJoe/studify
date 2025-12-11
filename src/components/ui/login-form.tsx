@@ -81,7 +81,7 @@ const LoginForm = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         <Loader2 className="w-10 h-10 animate-spin text-sky-500 mb-4" />
       </div>
     );
@@ -89,7 +89,7 @@ const LoginForm = () => {
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      <Card className="border border-gray-100 shadow-md bg-white rounded-2xl overflow-hidden">
+      <Card className="border border-border shadow-md bg-card rounded-2xl overflow-hidden">
         <CardContent className="">
           {!user ? (
             <div className="flex flex-col items-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
@@ -98,7 +98,7 @@ const LoginForm = () => {
                 <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3 text-xl">
                   👋
                 </div>
-                <h1 className="text-xl font-bold tracking-tight text-gray-900">
+                <h1 className="text-xl font-bold tracking-tight text-foreground">
                   Welcome Back
                 </h1>
                 <p className="text-muted-foreground text-xs sm:text-sm max-w-[240px] mx-auto leading-relaxed">
@@ -111,7 +111,7 @@ const LoginForm = () => {
                 <Button
                   onClick={handleGoogleLogin}
                   variant="outline"
-                  className="cursor-pointer w-full h-10 bg-white hover:bg-gray-50 text-gray-700 border-gray-200 font-medium transition-all duration-200 shadow-sm hover:shadow-md rounded-lg group text-sm"
+                  className="cursor-pointer w-full h-10 bg-background hover:bg-accent text-foreground border-border font-medium transition-all duration-200 shadow-sm hover:shadow-md rounded-lg group text-sm"
                 >
                   <GoogleIcon className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                   Continue with Google
@@ -140,7 +140,7 @@ const LoginForm = () => {
               </div>
 
               <div className="text-center space-y-1 mb-6">
-                <h2 className="text-lg font-bold text-gray-900">
+                <h2 className="text-lg font-bold text-foreground">
                   {user.displayName || "Explorer"}
                 </h2>
                 <p className="text-xs text-muted-foreground font-medium">

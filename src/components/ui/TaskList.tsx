@@ -39,14 +39,14 @@ const TaskList = ({
   return (
     <div className="space-y-4">
       {tasks.length === 0 ? (
-        <Card className="border-sky-100 shadow-sm bg-white">
-          <CardContent className="flex flex-col items-center justify-center min-h-[300px] py-12 text-center text-gray-400 gap-4">
+        <Card className="border-sky-100 dark:border-border shadow-sm bg-card">
+          <CardContent className="flex flex-col items-center justify-center min-h-[300px] py-12 text-center text-muted-foreground gap-4">
             <ClipboardList className="w-16 h-16 opacity-10" />
             <div className="space-y-1">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-foreground">
                 No tasks yet
               </h3>
-              <p className="text-sm text-gray-500 max-w-sm mx-auto">
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                 Create your first task to start tracking your study sessions
               </p>
             </div>
@@ -60,10 +60,10 @@ const TaskList = ({
           return (
             <Card
               key={task.id}
-              className="bg-gradient-card backdrop-blur-sm border border-sky-100 shadow-soft hover:shadow-medium transition-all"
+              className="bg-gradient-card backdrop-blur-sm border border-sky-100 dark:border-border shadow-soft hover:shadow-medium transition-all"
             >
               <CardContent className="pt-6">
-                <div className="flex flex-wrap items-center justify-between p-3 rounded-lg border border-sky-100 hover:bg-sky-50/50 transition-colors gap-y-2">
+                <div className="flex flex-wrap items-center justify-between p-3 rounded-lg border border-sky-100 dark:border-border hover:bg-sky-50/50 transition-colors gap-y-2">
                   <div className="flex items-center gap-3 flex-1">
                     {/* Block click without disabled */}
                     <Checkbox
@@ -82,8 +82,8 @@ const TaskList = ({
                       tabIndex={isBlocked ? -1 : 0} // Disable focus when blocked
                       aria-disabled={isBlocked}
                       className={`${isBlocked
-                          ? "opacity-50 cursor-default"
-                          : "hover:border-sky-400"
+                        ? "opacity-50 cursor-default"
+                        : "hover:border-sky-400"
                         }`}
                     />
 

@@ -85,7 +85,7 @@ export const StreakCard = () => {
           </DialogHeader>
         </VisuallyHidden>
 
-        <div className="relative bg-gradient-to-b from-white to-orange-50 rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden flex items-center justify-between gap-4">
+        <div className="relative bg-gradient-to-b from-background to-orange-50 dark:to-orange-950/20 rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden flex items-center justify-between gap-4">
           {/* Glow Background */}
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-[-40px] right-[-40px] w-32 h-32 md:w-40 md:h-40 bg-orange-400/20 blur-3xl rounded-full"></div>
@@ -94,13 +94,13 @@ export const StreakCard = () => {
 
           {/* LEFT SIDE: TEXT */}
           <div className="text-left flex flex-col z-10">
-            <p className="text-gray-700 text-lg md:text-2xl font-bold tracking-wide">
+            <p className="text-foreground text-lg md:text-2xl font-bold tracking-wide">
               Kamu belajar
             </p>
             <h2 className="text-5xl md:text-[80px] font-black text-orange-500 leading-none drop-shadow-sm my-1 md:my-3">
               {streak}
             </h2>
-            <p className="text-gray-700 text-lg md:text-2xl font-bold">
+            <p className="text-foreground text-lg md:text-2xl font-bold">
               hari berturut-turut!
             </p>
           </div>

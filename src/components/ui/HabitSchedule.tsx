@@ -329,7 +329,7 @@ const Page = () => {
 
   if (subjectsLoading || tasksLoading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-10 h-10 animate-spin text-sky-500 mb-4" />
       </div>
     );
@@ -337,23 +337,23 @@ const Page = () => {
   const subjectTasks = tasks.filter((t) => t.subjectId === selectedSubject?.id);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/50">
       <NotificationPermissionGuard />
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-10 transition-all duration-200 px-4 py-4 mb-6 md:mb-8">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md px-6 py-4 mb-6 md:mb-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between h-12 md:h-14">
           <div className="flex items-center gap-2 md:gap-4">
             <button
               onClick={() => router.back()}
-              className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="p-1.5 md:p-2 rounded-full hover:bg-accent transition-colors"
               aria-label="Go back"
             >
-              <ArrowLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-700" />
+              <ArrowLeft className="w-5 h-5 md:w-6 md:h-6 text-foreground" />
             </button>
 
             <div className="flex items-center gap-2 md:gap-3">
               <Calendar className="w-6 h-6 md:w-8 md:h-8 text-sky-500" />
-              <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-xl md:text-3xl font-bold text-foreground leading-tight">
                 Habit Scheduling
               </h1>
             </div>
@@ -388,14 +388,14 @@ const Page = () => {
               </div>
 
               {subjects.length === 0 ? (
-                <Card className="border-sky-100 shadow-sm bg-white">
-                  <CardContent className="flex flex-col items-center justify-center min-h-[300px] py-12 text-center text-gray-400 gap-4">
+                <Card className="border-sky-100 dark:border-border shadow-sm bg-card">
+                  <CardContent className="flex flex-col items-center justify-center min-h-[300px] py-12 text-center text-muted-foreground gap-4">
                     <BookOpen className="w-16 h-16 opacity-10" />
                     <div className="space-y-1">
-                      <h3 className="text-lg font-medium text-gray-900">
+                      <h3 className="text-lg font-medium text-foreground">
                         No subjects yet
                       </h3>
-                      <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                      <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                         Create your first subject to start tracking your study
                         sessions
                       </p>

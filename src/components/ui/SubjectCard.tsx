@@ -21,7 +21,7 @@ interface SubjectCardProps {
 const SubjectCard = ({ subject, onSelect, onEdit, onDelete }: SubjectCardProps) => {
   return (
     <Card
-      className="group hover:shadow-medium transition-all duration-300 cursor-pointer bg-gradient-card backdrop-blur-sm border border-sky-100"
+      className="group hover:shadow-medium transition-all duration-300 cursor-pointer bg-gradient-card backdrop-blur-sm border border-sky-100 dark:border-border"
       onClick={() => onSelect(subject)}
     >
       <CardHeader>

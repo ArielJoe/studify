@@ -57,7 +57,7 @@ export default function PomodoroPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         <Loader2 className="w-10 h-10 animate-spin text-sky-500 mb-4" />
       </div>
     );
@@ -68,7 +68,7 @@ export default function PomodoroPage() {
   }
 
   return (
-    <div className="min-h-screen w-full overflow-hidden bg-gradient-to-br from-background via-background to-secondary/20">
+    <div className="min-h-screen w-full flex items-center justify-center bg-muted/50 overflow-hidden">
       <PomodoroTimer
         initialFocus={pomodoroConfig.focusDuration}
         initialBreak={pomodoroConfig.breakDuration}

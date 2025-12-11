@@ -43,7 +43,7 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
     <div className="w-full h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 px-1">
-        <div className="text-base sm:text-lg font-bold text-gray-800">
+        <div className="text-base sm:text-lg font-bold text-foreground">
           {format(currentDate, "MMMM yyyy")}
         </div>
         <div className="flex gap-1">
@@ -53,7 +53,7 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
             className="h-7 w-7"
             onClick={prevMonth}
           >
-            <ChevronLeft className="h-4 w-4 text-gray-600" />
+            <ChevronLeft className="h-4 w-4 text-muted-foreground" />
           </Button>
           <Button
             variant="ghost"
@@ -61,7 +61,7 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
             className="h-7 w-7"
             onClick={nextMonth}
           >
-            <ChevronRight className="h-4 w-4 text-gray-600" />
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </Button>
         </div>
       </div>
@@ -72,7 +72,7 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
           // Responsive font size
           <div
             key={day}
-            className="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase py-1"
+            className="text-[10px] sm:text-xs text-muted-foreground font-semibold uppercase py-1"
           >
             {day}
           </div>
@@ -98,13 +98,13 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
               className={`
                 aspect-square flex items-center justify-center 
                 rounded-md sm:rounded-lg text-sm sm:text-base font-medium transition-all duration-200 cursor-default
-                ${!isCurrentMonth ? "text-gray-300 opacity-40" : "text-gray-700"
+                ${!isCurrentMonth ? "text-muted-foreground opacity-40" : "text-foreground"
                 }
                 ${isActive
                   ? "bg-orange-500 text-white shadow-sm border border-orange-600"
                   : isTodayDate
                     ? "border-2 border-sky-500 text-sky-600 font-bold"
-                    : "hover:bg-gray-100"
+                    : "hover:bg-accent"
                 }
               `}
             >
@@ -115,7 +115,7 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
       </div>
 
       {/* Legend */}
-      <div className="mt-4 flex items-center justify-end gap-3 text-[10px] sm:text-xs text-gray-500 font-medium">
+      <div className="mt-4 flex items-center justify-end gap-3 text-[10px] sm:text-xs text-muted-foreground font-medium">
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-sm border-2 border-sky-500"></div>
           <span>Today</span>

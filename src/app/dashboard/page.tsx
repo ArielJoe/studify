@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { StreakCard } from "@/components/ui/StreakCard";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const Page = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -78,8 +79,8 @@ const Page = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md px-6 py-4">
+    <div className="min-h-screen bg-muted/50">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           {/* Logo Kiri */}
           <div className="flex items-center gap-2">
@@ -96,13 +97,16 @@ const Page = () => {
             </h1>
           </div>
 
+
           {/* Profil Kanan (Nama & Gambar) */}
           <div className="flex items-center gap-4">
+            <ModeToggle />
+
             <div className="hidden md:block text-right">
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-sm font-semibold text-foreground">
                 {user.displayName || "User"}
               </p>
-              <p className="text-xs text-gray-500">{user.email}</p>
+              <p className="text-xs text-muted-foreground">{user.email}</p>
             </div>
 
             <DropdownMenu>
@@ -149,7 +153,7 @@ const Page = () => {
           <div className="grid md:grid-cols-3 gap-6">
             {features.map((feature, index) => {
               const FeatureContent = (
-                <div className="h-full p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-sky-200 bg-white group">
+                <div className="h-full p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border-2 border-border hover:border-sky-200 bg-card group">
                   <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300"
                     style={{
@@ -159,10 +163,10 @@ const Page = () => {
                   >
                     <feature.icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-sky-600 transition-colors">
+                  <h3 className="text-2xl font-bold mb-3 text-foreground group-hover:text-sky-600 transition-colors">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-500 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
                 </div>

@@ -133,12 +133,12 @@ export function PomodoroTimer({
     <div className="flex min-h-screen w-full items-center justify-center p-4">
       <NotificationPermissionGuard />
       <div className="w-full max-w-md space-y-8 relative">
-        <div className="absolute top-0 left-0">
+        <div className="absolute top-0 left-0 flex items-center gap-2">
           <button
             onClick={() => router.back()}
-            className="p-2 rounded-full hover:bg-gray-100 transition"
+            className="p-2 rounded-full hover:bg-accent transition"
           >
-            <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
+            <ArrowLeft className="w-6 h-6 text-foreground cursor-pointer" />
           </button>
         </div>
 
