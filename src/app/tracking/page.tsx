@@ -347,7 +347,7 @@ const Page = () => {
                 <BarChart3 className="w-5 h-5 text-sky-500" /> Focus Activity
               </CardTitle>
               <Select value={range} onValueChange={setRange}>
-                <SelectTrigger className="w-[140px] cursor-pointer text-sm">
+                <SelectTrigger className="w-[140px] cursor-pointer text-sm focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 border-gray-200">
                   <SelectValue placeholder="Select range" />
                 </SelectTrigger>
                 <SelectContent>
@@ -371,7 +371,10 @@ const Page = () => {
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={weeklyData}>
+                  <BarChart
+                    data={weeklyData}
+                    margin={{ top: 10, right: 10, left: 10, bottom: 20 }}
+                  >
                     <CartesianGrid
                       strokeDasharray="3 3"
                       vertical={false}
@@ -382,25 +385,48 @@ const Page = () => {
                       tick={{ fill: "#6b7280", fontSize: 12 }}
                       axisLine={false}
                       tickLine={false}
+                      label={{
+                        value: "Days",
+                        position: "insideBottom",
+                        offset: -10,
+                        style: { fill: "#9ca3af", fontSize: 12 },
+                      }}
                     />
                     <YAxis
                       tick={{ fill: "#6b7280", fontSize: 12 }}
                       axisLine={false}
                       tickLine={false}
+                      label={{
+                        value: "Minutes",
+                        angle: -90,
+                        position: "insideLeft",
+                        style: {
+                          textAnchor: "middle",
+                          fill: "#9ca3af",
+                          fontSize: 12,
+                        },
+                      }}
                     />
                     <Tooltip
-                      cursor={{ fill: "#f9fafb" }}
+                      cursor={{ fill: "#f9fafb", strokeWidth: 0 }}
                       contentStyle={{
                         borderRadius: "8px",
                         border: "none",
                         boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                       }}
                     />
-                    <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
+                    <Bar
+                      dataKey="minutes"
+                      radius={[4, 4, 0, 0]}
+                      activeBar={false}
+                    >
                       {weeklyData.map((entry, i) => (
                         <Cell
                           key={i}
                           fill={entry.minutes > 0 ? "#38bdf8" : "#e5e7eb"}
+                          stroke="transparent"
+                          strokeWidth={0}
+                          className="outline-none focus:outline-none"
                         />
                       ))}
                     </Bar>
