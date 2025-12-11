@@ -104,7 +104,7 @@ const StreakCalendar = ({ activeDates = [] }: StreakCalendarProps) => {
                   ? "bg-orange-500 text-white shadow-sm border border-orange-600"
                   : isTodayDate
                     ? "border-2 border-sky-500 text-sky-600 font-bold"
-                    : "hover:bg-accent"
+                    : ""
                 }
               `}
             >

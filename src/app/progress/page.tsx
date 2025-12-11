@@ -414,14 +414,16 @@ const Page = () => {
                       }}
                     />
                     <Tooltip
-                      cursor={{ fill: theme === 'dark' ? 'hsl(var(--accent))' : '#f9fafb', strokeWidth: 0 }}
+                      cursor={{ fill: "transparent" }}
                       contentStyle={{
                         borderRadius: "8px",
                         border: "none",
                         boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                        backgroundColor: theme === 'dark' ? 'hsl(var(--card))' : 'white',
-                        color: theme === 'dark' ? 'hsl(var(--foreground))' : 'black'
+                        backgroundColor: "#000000",
+                        color: "#ffffff"
                       }}
+                      itemStyle={{ color: "#ffffff" }}
+                      labelStyle={{ color: "#ffffff" }}
                     />
                     <Bar
                       dataKey="minutes"
