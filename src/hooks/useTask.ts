@@ -17,7 +17,7 @@ import { Task } from "@/types/schedule";
 // Ensure path is correct
 import { updateUserStreak } from "@/lib/streak";
 
-export const useTasks = (subjectId: string | null) => {
+export const useTask = (subjectId: string | null) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 

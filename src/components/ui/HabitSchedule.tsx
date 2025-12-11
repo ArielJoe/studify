@@ -15,7 +15,7 @@ import CreateTaskDialog from "@/components/ui/CreateTaskDialog";
 import UpdateTaskDialog from "./UpdateTaskDialog";
 import UpdateSubjectDialog from "@/components/ui/UpdateSubjectDialog";
 import { useSubjects } from "@/hooks/useSubject";
-import { useTasks } from "@/hooks/useTasks";
+import { useTask } from "@/hooks/useTask";
 import { toast } from "@/hooks/use-toast";
 import type { Subject, Task } from "@/types/schedule";
 import ScheduleCalendar from "./ScheduleCalender";
@@ -52,7 +52,7 @@ const Page = () => {
     updateTask,
     toggleTask,
     deleteTask,
-  } = useTasks(selectedSubject?.id || null);
+  } = useTask(selectedSubject?.id || null);
 
   const [showSubjectDialog, setShowSubjectDialog] = useState(false);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
@@ -177,11 +177,11 @@ const Page = () => {
         setSelectedSubject((prev) =>
           prev
             ? {
-                ...prev,
-                title: payload.title,
-                description: payload.description,
-                scheduledDate: payload.scheduledDate ?? null,
-              }
+              ...prev,
+              title: payload.title,
+              description: payload.description,
+              scheduledDate: payload.scheduledDate ?? null,
+            }
             : prev
         );
       }

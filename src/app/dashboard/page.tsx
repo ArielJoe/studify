@@ -41,7 +41,7 @@ const Page = () => {
       title: "Progress Tracking",
       description:
         "Visualize your growth with insights and achievement streaks.",
-      href: "/tracking",
+      href: "/progress",
     },
   ];
 
