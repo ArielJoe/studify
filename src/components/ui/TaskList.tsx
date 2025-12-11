@@ -1,7 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Play, MoreVertical, Clock, CheckCircle2, Pencil, Trash } from "lucide-react";
+import {
+  Play,
+  MoreVertical,
+  CheckCircle2,
+  Pencil,
+  Trash,
+  ClipboardList,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Task } from "@/types/schedule";
 import {
@@ -32,11 +39,18 @@ const TaskList = ({
   return (
     <div className="space-y-4">
       {tasks.length === 0 ? (
-        <Card className="p-8 bg-gradient-card backdrop-blur-sm border border-sky-100">
-          <div className="text-center text-muted-foreground">
-            <Clock className="h-12 w-12 mx-auto mb-3 opacity-60 text-sky-400" />
-            <p>No tasks yet. Create your first task to get started!</p>
-          </div>
+        <Card className="border-sky-100 shadow-sm bg-white">
+          <CardContent className="flex flex-col items-center justify-center min-h-[300px] py-12 text-center text-gray-400 gap-4">
+            <ClipboardList className="w-16 h-16 opacity-10" />
+            <div className="space-y-1">
+              <h3 className="text-lg font-medium text-gray-900">
+                No tasks yet
+              </h3>
+              <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                Create your first task to start tracking your study sessions
+              </p>
+            </div>
+          </CardContent>
         </Card>
       ) : (
         tasks.map((task) => {
@@ -67,7 +81,11 @@ const TaskList = ({
                       }}
                       tabIndex={isBlocked ? -1 : 0} // Disable focus when blocked
                       aria-disabled={isBlocked}
-                      className={`${isBlocked ? "opacity-50 cursor-default" : "hover:border-sky-400"}`}
+                      className={`${
+                        isBlocked
+                          ? "opacity-50 cursor-default"
+                          : "hover:border-sky-400"
+                      }`}
                     />
 
                     <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -117,7 +135,11 @@ const TaskList = ({
                     {/* Dropdown */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="hover:bg-sky-100">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="hover:bg-sky-100"
+                        >
                           <MoreVertical className="h-5 w-5 text-sky-600" />
                         </Button>
                       </DropdownMenuTrigger>

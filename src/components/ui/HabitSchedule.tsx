@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, ArrowLeft, Timer, Calendar, Loader2 } from "lucide-react";
+import { Plus, ArrowLeft, Calendar, Loader2, BookOpen } from "lucide-react";
 import SubjectCard from "@/components/ui/SubjectCard";
 import TaskList from "@/components/ui/TaskList";
 import PomodoroProgressBar from "@/components/ui/PomodoroProgressBar";
@@ -177,11 +177,11 @@ const Page = () => {
         setSelectedSubject((prev) =>
           prev
             ? {
-              ...prev,
-              title: payload.title,
-              description: payload.description,
-              scheduledDate: payload.scheduledDate ?? null,
-            }
+                ...prev,
+                title: payload.title,
+                description: payload.description,
+                scheduledDate: payload.scheduledDate ?? null,
+              }
             : prev
         );
       }
@@ -388,7 +388,7 @@ const Page = () => {
               {subjects.length === 0 ? (
                 <Card className="border-sky-100 shadow-sm bg-white">
                   <CardContent className="flex flex-col items-center justify-center min-h-[300px] py-12 text-center text-gray-400 gap-4">
-                    <Timer className="w-16 h-16 opacity-10" />
+                    <BookOpen className="w-16 h-16 opacity-10" />
                     <div className="space-y-1">
                       <h3 className="text-lg font-medium text-gray-900">
                         No subjects yet
@@ -398,12 +398,6 @@ const Page = () => {
                         sessions
                       </p>
                     </div>
-                    <Button
-                      onClick={() => setShowSubjectDialog(true)}
-                      className="bg-sky-400 hover:bg-sky-500 text-white transition-colors mt-2"
-                    >
-                      <Plus className="mr-2 h-4 w-4" /> Create First Subject
-                    </Button>
                   </CardContent>
                 </Card>
               ) : (
