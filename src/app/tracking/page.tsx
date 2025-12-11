@@ -55,7 +55,6 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
 
   // Component State
-  const [maxSubjectTaskCount, setMaxSubjectTaskCount] = useState(1);
   const [range, setRange] = useState("7");
   const [totalFocusMinutes, setTotalFocusMinutes] = useState(0);
   const [completedTasksCount, setCompletedTasksCount] = useState(0);
@@ -64,8 +63,9 @@ const Page = () => {
   const [weeklyData, setWeeklyData] = useState<
     { name: string; minutes: number }[]
   >([]);
+
   const [subjectPerformance, setSubjectPerformance] = useState<
-    { name: string; tasks: number }[]
+    { name: string; completed: number; total: number }[]
   >([]);
   const [activeDates, setActiveDates] = useState<Date[]>([]);
 
@@ -153,18 +153,29 @@ const Page = () => {
         });
         setWeeklyData(weeklyChartData);
 
-        const subjectStats: Record<string, number> = {};
-        completedTasks.forEach((t) => {
+        const subjectStats: Record<
+          string,
+          { total: number; completed: number }
+        > = {};
+        tasks.forEach((t) => {
           const subjectName = subjectsMap.get(t.subjectId) || "Uncategorized";
-          subjectStats[subjectName] = (subjectStats[subjectName] || 0) + 1;
+          if (!subjectStats[subjectName]) {
+            subjectStats[subjectName] = { total: 0, completed: 0 };
+          }
+          subjectStats[subjectName].total += 1;
+          if (t.completed) {
+            subjectStats[subjectName].completed += 1;
+          }
         });
         const subjectChartData = Object.entries(subjectStats)
-          .map(([name, count]) => ({ name, tasks: count }))
-          .sort((a, b) => b.tasks - a.tasks)
+          .map(([name, stats]) => ({
+            name,
+            completed: stats.completed,
+            total: stats.total,
+          }))
+          .sort((a, b) => b.completed - a.completed)
           .slice(0, 5);
-        const maxVal =
-          subjectChartData.length > 0 ? subjectChartData[0].tasks : 1;
-        setMaxSubjectTaskCount(maxVal);
+
         setSubjectPerformance(subjectChartData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -295,28 +306,32 @@ const Page = () => {
                     </p>
                   </div>
                 ) : (
-                  subjectPerformance.map((subject, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium text-gray-700">
-                          {subject.name}
-                        </span>
-                        <span className="text-gray-500 font-medium">
-                          {subject.tasks}{" "}
-                          {subject.tasks === 1 ? "task" : "tasks"}
-                        </span>
+                  subjectPerformance.map((subject, index) => {
+                    const percentage =
+                      subject.total > 0
+                        ? Math.round((subject.completed / subject.total) * 100)
+                        : 0;
+                    return (
+                      <div key={index} className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="font-medium text-gray-700">
+                            {subject.name}
+                          </span>
+                          <span className="text-gray-500 font-medium">
+                            {subject.completed}/{subject.total} tasks ({percentage}%)
+                          </span>
+                        </div>
+                        <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-sky-400 to-blue-500 rounded-full transition-all duration-500 ease-out"
+                            style={{
+                              width: `${percentage}%`,
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-sky-400 to-blue-500 rounded-full transition-all duration-500 ease-out"
-                          style={{
-                            width: `${(subject.tasks / maxSubjectTaskCount) * 100
-                              }%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </CardContent>
