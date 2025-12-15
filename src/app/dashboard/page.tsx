@@ -112,7 +112,7 @@ const Page = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-10 w-10 rounded-full p-0 overflow-hidden border border-border shadow-sm hover:shadow-md transition-all"
+                  className="relative h-10 w-10 rounded-full p-0 overflow-hidden border border-border shadow-sm hover:shadow-md transition-all cursor-pointer"
                 >
                   {user.photoURL ? (
                     <Image
@@ -198,10 +198,29 @@ const Page = () => {
       {/* --- MAIN CONTENT --- */}
       <main className="py-6 px-4">
         <div className="max-w-6xl mx-auto">
+          {/* HERO SECTION */}
+          <div className="relative mb-10 overflow-hidden rounded-3xl border bg-gradient-to-br from-sky-500/10 via-blue-500/5 to-transparent p-8 md:p-12">
+            <div className="relative z-10 max-w-2xl">
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                Hello,{" "}
+                <span className="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+                  {user.displayName || "Learner"}
+                </span>
+              </h2>
+
+              <p className="mt-3 text-muted-foreground text-base md:text-lg">
+                Stay consistent, track your habits, and build productive study routines
+                with <b>Studify</b>.
+              </p>
+            </div>
+
+            <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-sky-400/20 blur-3xl" />
+          </div>
+          
           <div className="grid md:grid-cols-3 gap-6">
             {features.map((feature, index) => {
               const FeatureContent = (
-                <div className="h-full p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border-2 border-border hover:border-sky-200 bg-card group">
+                <div className="h-full p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border border-border/60 hover:border-sky-400/50 hover:-translate-y-1 bg-card group">
                   <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300"
                     style={{

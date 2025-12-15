@@ -62,7 +62,7 @@ export const StreakCard = () => {
     return () => unsubscribeAuth();
   }, []);
 
-  if (loading) return null; // Bisa diganti skeleton loader jika mau
+  if (loading) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -78,6 +78,7 @@ export const StreakCard = () => {
       </DialogTrigger>
 
       <DialogContent className="max-w-[90vw] md:max-w-[500px] p-0 border-none bg-transparent shadow-none outline-none">
+        
         <VisuallyHidden>
           <DialogHeader>
             <DialogTitle>Streak Popup</DialogTitle>
