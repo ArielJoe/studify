@@ -75,7 +75,7 @@ function Calendar({
           "relative w-full h-full p-0 text-center group/day aspect-square select-none hover:bg-sky-100 hover:text-sky-600 rounded-md transition-colors focus:outline-none focus:ring-0",
           defaultClassNames.day
         ),
-        today: cn("bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none", defaultClassNames.today),
+        today: cn("rounded-md data-[selected=true]:rounded-none", defaultClassNames.today),
         range_start: cn("rounded-l-md bg-accent text-accent-foreground", defaultClassNames.range_start),
         range_middle: cn("rounded-none bg-accent/60 text-foreground", defaultClassNames.range_middle),
         range_end: cn("rounded-r-md bg-accent text-accent-foreground", defaultClassNames.range_end),

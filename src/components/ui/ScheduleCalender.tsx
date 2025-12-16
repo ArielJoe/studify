@@ -102,60 +102,62 @@ const ScheduleCalendar = ({
               }
               return (
                 <Collapsible key={subject.id} open={isExpanded}>
-                  <div className="bg-sky-100 rounded-lg border border-primary/20 overflow-hidden">
-                    <div className="flex items-center">
+                  <div className="bg-card dark:bg-card/50 rounded-lg border border-border/50 overflow-hidden shadow-sm hover:border-sky-400/30 transition-all duration-200">
+                    <div
+                      className="flex items-center group p-1 hover:bg-sky-50 dark:hover:bg-sky-500/5 transition-colors cursor-pointer"
+                      onClick={() => handleSubjectClick(subject)}
+                    >
                       {subjectTasks.length > 0 && (
                         <CollapsibleTrigger asChild>
                           <button
                             onClick={(e) => toggleExpanded(subject.id, e)}
-                            className="p-2 hover:bg-sky-200 transition-colors cursor-pointer"
+                            className="p-2 rounded-md hover:bg-sky-100 dark:hover:bg-sky-500/10 transition-colors cursor-pointer text-muted-foreground hover:text-sky-600 dark:hover:text-sky-400 mr-1"
                           >
                             <ChevronRight
                               className={cn(
-                                "h-4 w-4 text-primary transition-transform duration-200",
+                                "h-4 w-4 transition-transform duration-200",
                                 isExpanded && "rotate-90"
                               )}
                             />
                           </button>
                         </CollapsibleTrigger>
                       )}
-                      <button
-                        onClick={() => handleSubjectClick(subject)}
+                      <div
                         className={cn(
-                          "flex-1 text-left px-3 py-2 text-sm font-medium hover:bg-sky-200 transition-colors cursor-pointer",
-                          !subjectTasks.length && "pl-4"
+                          "flex-1 text-left py-1.5 text-sm font-medium",
+                          !subjectTasks.length && "pl-2"
                         )}
                       >
-                        <span className="text-foreground">{subject.title}</span>
+                        <span className="text-foreground group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">{subject.title}</span>
                         {subjectTasks.length > 0 && (
                           <span className="text-xs text-muted-foreground ml-2">
                             ({subjectTasks.length} task
                             {subjectTasks.length !== 1 ? "s" : ""})
                           </span>
                         )}
-                      </button>
+                      </div>
                     </div>
 
                     <CollapsibleContent>
                       {subjectTasks.length > 0 && (
-                        <div className="px-3 pb-2 space-y-1 border-t border-primary/10 pt-2">
+                        <div className="px-3 pb-2 pt-1 space-y-1.5 bg-muted/30 dark:bg-muted/10 border-t border-border/40">
                           {subjectTasks.map((task) => (
                             <div
                               key={task.id}
                               className={cn(
-                                "text-xs px-2 py-1.5 rounded bg-background/50 flex items-center justify-between",
-                                task.completed && "opacity-50 line-through"
+                                "text-xs px-3 py-2 rounded-md bg-background/80 hover:bg-background border border-transparent hover:border-border/50 shadow-sm flex items-center justify-between transition-all",
+                                task.completed && "opacity-50 line-through bg-muted/50"
                               )}
                             >
-                              <span className="truncate">{task.title}</span>
-                              <div className="flex items-center gap-2 text-muted-foreground ml-2 shrink-0">
-                                <span className="flex items-center gap-0.5">
-                                  <Clock className="h-3 w-3" />
+                              <span className="truncate font-medium text-foreground/80">{task.title}</span>
+                              <div className="flex items-center gap-3 text-muted-foreground ml-2 shrink-0">
+                                <span className="flex items-center gap-1 bg-sky-500/5 px-1.5 py-0.5 rounded text-[10px]">
+                                  <Clock className="h-3 w-3 text-sky-500" />
                                   {task.pomodoroMinutes}m
                                 </span>
                                 {task.breakMinutes > 0 && (
-                                  <span className="flex items-center gap-0.5">
-                                    <Coffee className="h-3 w-3" />
+                                  <span className="flex items-center gap-1 bg-orange-500/5 px-1.5 py-0.5 rounded text-[10px]">
+                                    <Coffee className="h-3 w-3 text-orange-500" />
                                     {task.breakMinutes}m
                                   </span>
                                 )}

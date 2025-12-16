@@ -119,7 +119,8 @@
 **Periode: 15 Desember 2025 - 19 Desember 2025**
 
 #### Ariel Jonathan Wihardja (2372015)
-- ✅ 
+- ✅ **Fitur Study Schedule**:
+  - Memperbaiki tampilan UI dan dark mode
 
 #### Eben Praus Yosia (2372023)
 - ✅ **Fitur Dashboard (1)**:
