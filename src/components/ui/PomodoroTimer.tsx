@@ -136,7 +136,7 @@ export function PomodoroTimer({
         <div className="absolute top-0 left-0 flex items-center gap-2">
           <button
             onClick={() => router.back()}
-            className="p-2 rounded-full hover:bg-accent transition"
+            className="p-2 rounded-full hover:bg-accent transition cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 text-foreground cursor-pointer" />
           </button>

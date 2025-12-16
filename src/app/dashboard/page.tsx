@@ -199,7 +199,7 @@ const Page = () => {
       <main className="py-6 px-4">
         <div className="max-w-6xl mx-auto">
           {/* HERO SECTION */}
-          <div className="relative mb-10 overflow-hidden rounded-3xl border bg-gradient-to-br from-sky-500/10 via-blue-500/5 to-transparent p-8 md:p-12">
+          <div className="relative mb-8 overflow-hidden rounded-3xl border bg-gradient-to-br from-sky-500/10 via-blue-500/5 to-transparent p-6 md:p-8">
             <div className="relative z-10 max-w-2xl">
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
                 Hello,{" "}
@@ -216,11 +216,11 @@ const Page = () => {
 
             <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-sky-400/20 blur-3xl" />
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             {features.map((feature, index) => {
               const FeatureContent = (
-                <div className="h-full p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border border-border/60 hover:border-sky-400/50 hover:-translate-y-1 bg-card group">
+                <div className="h-full p-6 md:p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border border-border/60 hover:border-sky-400/50 hover:-translate-y-1 bg-card group">
                   <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300"
                     style={{

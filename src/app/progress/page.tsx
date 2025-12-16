@@ -208,7 +208,7 @@ const Page = () => {
           <div className="flex items-center gap-2 md:gap-3">
             <button
               onClick={() => router.back()}
-              className="p-1.5 md:p-2 rounded-full hover:bg-accent transition"
+              className="p-1.5 md:p-2 rounded-full hover:bg-accent transition cursor-pointer"
             >
               <ArrowLeft className="w-5 h-5 md:w-6 md:h-6 text-foreground cursor-pointer" />
             </button>
@@ -223,9 +223,9 @@ const Page = () => {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 space-y-8">
+      <main className="max-w-6xl mx-auto px-4 space-y-6">
         {/* Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="border-sky-100 dark:border-border shadow-sm bg-card">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm text-muted-foreground">
@@ -279,7 +279,7 @@ const Page = () => {
         </div>
 
         {/* Middle Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Streak Calendar */}
           <Card className="shadow-sm border-gray-100 dark:border-border">
             <CardHeader>
