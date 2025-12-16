@@ -78,7 +78,7 @@ export const StreakCard = () => {
       </DialogTrigger>
 
       <DialogContent className="max-w-[90vw] md:max-w-[500px] p-0 border-none bg-transparent shadow-none outline-none">
-        
+
         <VisuallyHidden>
           <DialogHeader>
             <DialogTitle>Streak Popup</DialogTitle>
@@ -86,7 +86,7 @@ export const StreakCard = () => {
           </DialogHeader>
         </VisuallyHidden>
 
-        <div className="relative bg-gradient-to-b from-background to-orange-50 dark:to-orange-950/20 rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden flex items-center justify-between gap-4">
+        <div className="relative bg-white dark:bg-[#18181b] rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden flex items-center justify-between gap-4">
           {/* Glow Background */}
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-[-40px] right-[-40px] w-32 h-32 md:w-40 md:h-40 bg-orange-400/20 blur-3xl rounded-full"></div>

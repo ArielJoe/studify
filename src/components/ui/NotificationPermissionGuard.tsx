@@ -69,24 +69,24 @@ export const NotificationPermissionGuard = () => {
             }
         }}>
             <DialogContent
-                className="sm:max-w-[420px] w-[95%] rounded-3xl p-8 [&>button]:hidden flex flex-col items-center justify-center text-center gap-6 border-none shadow-2xl focus:outline-none focus:ring-0"
+                className="sm:max-w-[420px] w-[95%] rounded-3xl p-8 [&>button]:hidden flex flex-col items-center justify-center text-center gap-6 border-none shadow-2xl focus:outline-none focus:ring-0 bg-white dark:bg-[#18181b]"
                 onPointerDownOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
             >
 
                 <div className="flex flex-col items-center gap-4">
                     {/* Icon - Always Blue */}
-                    <div className="p-5 rounded-full bg-sky-50 shadow-inner">
+                    <div className="p-5 rounded-full bg-sky-50 dark:bg-sky-900/20 shadow-inner">
                         <Bell className="w-10 h-10 text-sky-500 fill-sky-500" />
                     </div>
 
-                    <DialogTitle className="text-2xl font-bold text-gray-900 tracking-tight">
+                    <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
                         Enable Notifications
                     </DialogTitle>
 
                     {/* Concise Description */}
                     <div className="space-y-3">
-                        <p className="text-gray-500 font-medium">
+                        <p className="text-gray-500 dark:text-slate-400 font-medium">
                             {permissionStatus === 'denied'
                                 ? "Studify requires notifications to function correctly."
                                 : "We need this permission to alert you when your timer ends, so you never miss a break."}
@@ -99,14 +99,14 @@ export const NotificationPermissionGuard = () => {
                         <Button
                             onClick={() => window.location.reload()}
                             variant="outline"
-                            className="w-full h-11 rounded-xl text-sky-600 border-sky-200 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300 transition-all font-semibold cursor-pointer focus:ring-0 focus:ring-offset-0 focus-visible:ring-0"
+                            className="w-full h-11 rounded-xl text-sky-600 border-sky-200 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300 dark:text-sky-400 dark:border-sky-800 dark:hover:bg-sky-950 dark:hover:text-sky-300 dark:hover:border-sky-700 transition-all font-semibold cursor-pointer focus:ring-0 focus:ring-offset-0 focus-visible:ring-0"
                         >
                             I&apos;ve enabled them, Refresh Page
                         </Button>
                     ) : (
                         <Button
                             onClick={handleRequestPermission}
-                            className="w-full h-11 bg-sky-500 hover:bg-sky-600 text-white rounded-xl shadow-lg shadow-sky-200 hover:shadow-sky-300 transition-all font-bold text-base cursor-pointer flex items-center justify-center gap-2 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0"
+                            className="w-full h-11 bg-sky-500 hover:bg-sky-600 text-white rounded-xl shadow-lg shadow-sky-200 dark:shadow-none hover:shadow-sky-300 transition-all font-bold text-base cursor-pointer flex items-center justify-center gap-2 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0"
                         >
                             Allow Notifications <ArrowRight className="w-5 h-5" />
                         </Button>
