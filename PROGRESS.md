@@ -113,3 +113,22 @@
 #### Derryl Eberhard Sangaptaras Sembiring (2372049)
 - ✅ **Fitur Progress Tracking**:  
   - Membuat UI Streak Card dan Streak Calendar
+
+---
+
+**Periode: 15 Desember 2025 - 19 Desember 2025**
+
+#### Ariel Jonathan Wihardja (2372015)
+- ✅ 
+
+#### Eben Praus Yosia (2372023)
+- ✅ **Fitur Dashboard (1)**:
+  - Memperbaiki tampilan dashboard (menambahkan hero)
+  - Menambahkan hover pada pilihan fitur
+
+#### Derryl Eberhard Sangaptaras Sembiring (2372049)
+- ✅ **Fitur Dashboard (2)**:  
+  - Memperbaiki tampilan dashboard (tombol dark mode)
+
+- ✅ **Fitur Habit Scheduling**:  
+  - Menambahkan hover card pada subjek

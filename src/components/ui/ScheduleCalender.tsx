@@ -108,7 +108,7 @@ const ScheduleCalendar = ({
                         <CollapsibleTrigger asChild>
                           <button
                             onClick={(e) => toggleExpanded(subject.id, e)}
-                            className="p-2 hover:bg-sky-200 transition-colors"
+                            className="p-2 hover:bg-sky-200 transition-colors cursor-pointer"
                           >
                             <ChevronRight
                               className={cn(
@@ -122,7 +122,7 @@ const ScheduleCalendar = ({
                       <button
                         onClick={() => handleSubjectClick(subject)}
                         className={cn(
-                          "flex-1 text-left px-3 py-2 text-sm font-medium hover:bg-sky-200 transition-colors",
+                          "flex-1 text-left px-3 py-2 text-sm font-medium hover:bg-sky-200 transition-colors cursor-pointer",
                           !subjectTasks.length && "pl-4"
                         )}
                       >
